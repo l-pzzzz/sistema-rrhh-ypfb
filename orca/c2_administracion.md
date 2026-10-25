@@ -1,4 +1,4 @@
-# Prompt — C2 Administración y reportes (A18) · rama `c2/administracion` · responsable: Quina
+# Prompt — C2 Administración y reportes (A18) · rama `c2-administracion` · responsable: Quina
 
 Lee `AGENTS.md` y `docs/`. Trabaja **solo** en `apps/administracion/` y `apps/reportes/`. No cambies modelos.
 

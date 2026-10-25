@@ -1,4 +1,4 @@
-# Prompt — C1 Seguro de Salud CPS (A13) · rama `c1/cps` · responsable: Rivera
+# Prompt — C1 Seguro de Salud CPS (A13) · rama `c1-cps` · responsable: Rivera
 
 Lee `AGENTS.md` y `docs/`. Trabaja **solo** en `apps/cps/`. No cambies modelos.
 

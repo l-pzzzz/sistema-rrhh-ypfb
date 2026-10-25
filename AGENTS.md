@@ -75,6 +75,6 @@ Una tarea está terminada solo si:
 Escribe primero las pruebas (con los resultados del informe) y después el código.
 
 ## 9. Git
-- Una rama por worktree: `base`, `c1/kardex`, `c1/cps`, `c1/planillas`, `c2/vacaciones`, `c2/finiquitos`, `c2/administracion`.
+- Una rama por worktree: `base`, `c1-kardex`, `c1-cps`, `c1-planillas`, `c2-vacaciones`, `c2-finiquitos`, `c2-administracion`.
 - Commits pequeños en español: `CU-02.1: registrar contrato con cargos`.
 - Nada se une a `main` sin revisión del integrante responsable.

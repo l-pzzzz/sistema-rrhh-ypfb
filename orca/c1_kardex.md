@@ -1,4 +1,4 @@
-# Prompt — C1 Kardex y Contratos (A12) · rama `c1/kardex` · responsable: Quina
+# Prompt — C1 Kardex y Contratos (A12) · rama `c1-kardex` · responsable: Quina
 
 Lee `AGENTS.md` y `docs/`. Trabaja **solo** en `apps/kardex/`. Los modelos ya existen: no cambies campos ni crees migraciones de esquema.
 

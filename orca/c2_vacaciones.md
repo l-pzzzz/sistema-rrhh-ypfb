@@ -1,4 +1,4 @@
-# Prompt — C2 Vacaciones y Lactancias (A16) · rama `c2/vacaciones` · responsable: Rivera
+# Prompt — C2 Vacaciones y Lactancias (A16) · rama `c2-vacaciones` · responsable: Rivera
 
 Lee `AGENTS.md` y `docs/`. Trabaja **solo** en `apps/vacaciones/`. No cambies modelos.
 

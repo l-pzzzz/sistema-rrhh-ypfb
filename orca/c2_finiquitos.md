@@ -1,4 +1,4 @@
-# Prompt — C2 Finiquitos y Evaluaciones (A17) · rama `c2/finiquitos` · responsable: Trujillo
+# Prompt — C2 Finiquitos y Evaluaciones (A17) · rama `c2-finiquitos` · responsable: Trujillo
 
 Lee `AGENTS.md` y `docs/`. Trabaja **solo** en `apps/finiquitos/`. No cambies modelos.
 

@@ -1,4 +1,4 @@
-# Prompt — C1 Planillas de Sueldos (A14) · rama `c1/planillas` · responsable: Trujillo
+# Prompt — C1 Planillas de Sueldos (A14) · rama `c1-planillas` · responsable: Trujillo
 
 Lee `AGENTS.md` y `docs/`. Trabaja **solo** en `apps/planillas/`. No cambies modelos.
 
