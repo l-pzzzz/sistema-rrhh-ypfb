@@ -78,3 +78,12 @@ Escribe primero las pruebas (con los resultados del informe) y después el códi
 - Una rama por worktree: `base`, `c1-kardex`, `c1-cps`, `c1-planillas`, `c2-vacaciones`, `c2-finiquitos`, `c2-administracion`.
 - Commits pequeños en español: `CU-02.1: registrar contrato con cargos`.
 - Nada se une a `main` sin revisión del integrante responsable.
+
+## 10. Ahorro de tokens
+- **Lee solo lo que necesitas.** No releas `docs/` completo en cada turno: busca tus secciones por identificador (`grep -n "RF-05\|CU-03" docs/*.md`) y lee solo esos rangos. `AGENTS.md` y tu archivo de `orca/` sí se leen completos al empezar.
+- **No muestres archivos grandes enteros.** Usa `grep`, `sed -n 'inicio,finp'` o `head`/`tail`; nunca hagas `cat` de migraciones, `schema.json`, logs ni archivos de más de 200 líneas.
+- **Pruebas con salida corta.** Durante el desarrollo ejecuta solo tu app: `pytest apps/<app> -q -x --tb=short`. La suite completa, una sola vez antes del PR. Si la salida es larga, guárdala en un archivo y muestra solo el final (`... > pytest.log; tail -30 pytest.log`).
+- **Comandos silenciosos.** `docker compose build -q`, `pip install -q`, `ruff check . --quiet` (o `--output-format concise`), `makemigrations --check --dry-run`. No sigas logs con `-f`.
+- **Respuestas breves.** Entre pasos no narres lo que haces; al terminar, un resumen corto. La descripción completa va en el PR, no en la terminal.
+- **Contexto limpio.** Cuando termines una tarea (PR abierto), ejecuta `/compact`. No arrastres a una tarea nueva el historial de la anterior.
+- **No repitas trabajo.** Si una prueba o comando ya pasó y no cambiaste nada relacionado, no lo vuelvas a ejecutar.
