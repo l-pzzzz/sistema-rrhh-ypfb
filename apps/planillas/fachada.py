@@ -13,7 +13,7 @@ from django.utils import timezone
 
 from apps.administracion.models import Bitacora, GestionSalarial
 from apps.core import auditoria
-from apps.core.parametros import parametros
+from apps.core.parametros import ParametroNoConfigurado, parametros
 from apps.kardex.models import Contrato, Empleado
 
 from .models import Anticipo, BoletaPago, DetalleBoleta, Marcacion, Planilla
@@ -228,8 +228,6 @@ class FachadaPlanilla:
         with transaction.atomic():
             gestion = GestionSalarial.objects.filter(anio=anio).first()
             if gestion is None:
-                from apps.core.parametros import ParametroNoConfigurado
-
                 raise ParametroNoConfigurado(f"La gestión {anio} no está configurada.")
             planilla, creada = Planilla.objects.get_or_create(gestion=gestion, mes=mes)
             if planilla.estado == Planilla.Estado.CERRADA:

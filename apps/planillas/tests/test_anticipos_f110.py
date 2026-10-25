@@ -7,6 +7,7 @@ import pytest
 from apps.administracion.models import Bitacora
 from apps.kardex.models import Contrato
 from apps.planillas.fachada import FachadaPlanilla
+from apps.planillas.models import Marcacion
 from apps.planillas.services import (
     AnticipoRechazado,
     ContratoNoVigente,
@@ -126,7 +127,6 @@ def test_rf_14_diciembre_tardio_pasa_a_enero_de_la_gestion_siguiente(contrato):
 
 def test_rf_14_f110_tardio_aparece_en_la_planilla_del_mes_siguiente(contrato):
     haber("8000")
-    Marcacion = contrato.marcaciones.model
     Marcacion.objects.create(contrato=contrato, anio=ANIO, mes=MES + 1, dias_trab=30)
     ServicioF110().registrar(contrato, ANIO, MES, D("500"), fecha(16))
 

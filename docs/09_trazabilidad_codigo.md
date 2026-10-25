@@ -15,13 +15,13 @@ Cada PR actualiza las filas de los requisitos que implementa. El integrador no u
 | RF-07 | El sistema debe controlar el plazo de afiliación desde el inicio laboral y mostrar en una … | CU-04 | `cps` | | | Pendiente |
 | RF-08 | El sistema debe alertar la desafiliación pendiente al registrarse el retiro del trabajador… | CU-04 | `cps` | | | Pendiente |
 | RF-09 | El sistema debe mantener el historial de afiliaciones y desafiliaciones de cada trabajador… | CU-04 | `cps` | | | Pendiente |
-| RF-10 | El sistema debe importar los días trabajados de cada empleado desde el archivo de marcacio… | CU-05 | `planillas` | | | Pendiente |
-| RF-11 | El sistema debe calcular la planilla mensual (preplanilla), permitir su revisión y cerrarl… | CU-05 | `planillas` | | | Pendiente |
-| RF-12 | El sistema debe aplicar el descuento de AFP según el porcentaje y el umbral parametrizados… | CU-05 | `planillas` | | | Pendiente |
-| RF-13 | El sistema debe calcular el RC-IVA separando la base imponible, el impuesto y el crédito f… | CU-05, CU-07 | `planillas` | | | Pendiente |
-| RF-14 | El sistema debe permitir registrar el formulario F110 presentado por el trabajador. | CU-07 | `planillas` | | | Pendiente |
-| RF-15 | El sistema debe permitir registrar anticipos de sueldo. | CU-06 | `planillas` | | | Pendiente |
-| RF-16 | El sistema debe generar la boleta de pago de cada trabajador y la planilla consolidada de … | CU-05 | `planillas` | | | Pendiente |
+| RF-10 | El sistema debe importar los días trabajados de cada empleado desde el archivo de marcacio… | CU-05 | `planillas` | `apps/planillas/asistencia.py` (`IFuenteAsistencia`, `ArchivoMarcacionesCSV`, `AdaptadorArchivoAsistencia`) / `fachada.py` (`FachadaPlanilla.importar_asistencia`), `views.py` (`procesar`) | `tests/test_asistencia.py` | Implementado |
+| RF-11 | El sistema debe calcular la planilla mensual (preplanilla), permitir su revisión y cerrarl… | CU-05 | `planillas` | `apps/planillas/fachada.py` (`FachadaPlanilla`, `ControladorPlanilla`, `CalculadoraDescuentos`) / `views.py` (`preplanilla`, `detalle`), `templates/planillas/` | `tests/test_calculadora.py`, `test_fachada.py`, `test_vistas.py`, `test_rendimiento.py` (RNF-04) | Implementado |
+| RF-12 | El sistema debe aplicar el descuento de AFP según el porcentaje y el umbral parametrizados… | CU-05 | `planillas` | `apps/planillas/fachada.py` (`CalculadoraDescuentos`) | `tests/test_calculadora.py`, `test_casos_aceptacion.py` (PL-01, PL-03) | Implementado |
+| RF-13 | El sistema debe calcular el RC-IVA separando la base imponible, el impuesto y el crédito f… | CU-05, CU-07 | `planillas` | `apps/planillas/fachada.py` (`CalculadoraDescuentos`) / `services.py` (`ServicioF110.credito`) | `tests/test_calculadora.py`, `test_casos_aceptacion.py` (PL-01 a PL-03), `test_fachada.py` | Implementado |
+| RF-14 | El sistema debe permitir registrar el formulario F110 presentado por el trabajador. | CU-07 | `planillas` | `apps/planillas/services.py` (`ServicioF110`) / `views.py` (`f110`), `forms.py` (`F110Form`) | `tests/test_anticipos_f110.py` | Implementado |
+| RF-15 | El sistema debe permitir registrar anticipos de sueldo. | CU-06 | `planillas` | `apps/planillas/services.py` (`ServicioAnticipos`) / `views.py` (`anticipos`), `forms.py` (`AnticipoForm`) | `tests/test_anticipos_f110.py`, `test_casos_aceptacion.py` (AN-01, AN-02) | Implementado |
+| RF-16 | El sistema debe generar la boleta de pago de cada trabajador y la planilla consolidada de … | CU-05 | `planillas` | `apps/planillas/fachada.py` (`GeneradorBoletas`, `aprobar_y_cerrar`) / `exportacion.py`, `views.py` (`boleta`, `exportar_planilla`, `exportar_boleta`) | `tests/test_fachada.py`, `test_exportacion.py` | Implementado |
 | RF-17 | El sistema debe registrar las solicitudes de vacaciones y licencias firmadas por el jefe i… | CU-08 | `vacaciones` | | | Pendiente |
 | RF-18 | El sistema debe calcular el saldo de vacaciones en días hábiles según la antigüedad y desc… | CU-08 | `vacaciones` | | | Pendiente |
 | RF-19 | El sistema debe registrar las entregas mensuales del subsidio de lactancia a la beneficiar… | CU-09 | `vacaciones` | | | Pendiente |

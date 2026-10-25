@@ -1,0 +1,8 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><style>
+@page{size:A4 landscape;margin:1cm}body{font-family:DejaVu Sans,sans-serif;font-size:8px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:2px}.d{text-align:right}
+</style></head><body>
+<h2>YPFB-Andina · Planilla de sueldos {{ planilla.mes }}/{{ planilla.gestion_id }}</h2>
+<table><tr>{% for e in encabezados %}<th>{{ e }}</th>{% endfor %}</tr>
+{% for f in filas %}<tr>{% for v in f %}<td{% if forloop.counter > 3 %} class="d"{% endif %}>{{ v }}</td>{% endfor %}</tr>{% endfor %}
+<tr><th colspan="3">Totales</th>{% for t in totales %}<th class="d">{{ t }}</th>{% endfor %}</tr></table>
+<p>Aprobada por {{ planilla.aprobado_por_id }} el {{ planilla.fecha_cierre|date:"d/m/Y" }} · Generado el {{ ahora|date:"d/m/Y H:i" }}</p></body></html>

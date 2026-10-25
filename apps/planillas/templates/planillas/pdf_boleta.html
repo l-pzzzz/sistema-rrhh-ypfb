@@ -1,0 +1,11 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><style>
+body{font-family:DejaVu Sans,sans-serif;font-size:11px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:4px}.d{text-align:right}
+</style></head><body>
+<h2>YPFB-Andina · Boleta de pago {{ boleta.planilla.mes }}/{{ boleta.planilla.gestion_id }}</h2>
+<p>{{ boleta.contrato.empleado.apellidos }} {{ boleta.contrato.empleado.nombres }} · CI {{ boleta.contrato.empleado_id }} · {{ boleta.dias_trab }} días trabajados</p>
+<table><tr><th>Concepto</th><th>Base</th><th>%</th><th>Monto</th></tr>
+{% for d in detalles %}<tr><td>{{ d.concepto }}</td><td class="d">{{ d.base|default_if_none:"" }}</td><td class="d">{{ d.porcentaje|default_if_none:"" }}</td><td class="d">{{ d.monto }}</td></tr>{% endfor %}
+<tr><th colspan="3">Total ingresos</th><td class="d">{{ boleta.tot_ingresos }}</td></tr>
+<tr><th colspan="3">Total descuentos</th><td class="d">{{ boleta.tot_descuentos }}</td></tr>
+<tr><th colspan="3">Líquido pagable</th><td class="d">{{ boleta.liquido }}</td></tr></table>
+<p>Generado el {{ ahora|date:"d/m/Y H:i" }}</p></body></html>

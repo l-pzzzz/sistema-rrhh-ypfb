@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Preplanilla{% endblock %}
+{% block contenido %}
+<h1 class="h3">Preplanilla · {{ nombre_mes }} {{ anio }}</h1>
+{% if datos.inconsistencias %}
+<div class="alert alert-warning">Fuera de la preplanilla: {% for i in datos.inconsistencias %}{{ i.ci }} ({{ i.motivo }}){% if not forloop.last %}; {% endif %}{% endfor %}</div>
+{% endif %}
+<div class="table-responsive">
+<table class="table table-sm align-middle">
+  <thead><tr><th>CI</th><th>Trabajador</th><th>Días</th><th class="text-end">Sueldo</th><th class="text-end">Otros ingresos</th><th class="text-end">Anticipos</th><th class="text-end">AFP</th><th class="text-end">RC-IVA</th><th class="text-end">Líquido</th></tr></thead>
+  <tbody>
+  {% for l in datos.lineas %}
+    <tr>
+      <td>{{ l.contrato.empleado_id }}</td><td>{{ l.contrato.empleado.apellidos }} {{ l.contrato.empleado.nombres }}</td><td>{{ l.calculo.dias }}</td>
+      <td class="text-end">{{ l.calculo.sueldo_ganado }}</td>
+      <td class="text-end">
+        <form method="post" class="d-flex gap-1 justify-content-end">{% csrf_token %}
+          <input type="hidden" name="contrato" value="{{ l.contrato.nro }}">
+          <input type="number" name="monto" step="0.01" min="0" value="{{ l.calculo.otros_ingresos }}" class="form-control form-control-sm w-auto" aria-label="Otros ingresos">
+          <button class="btn btn-sm btn-outline-primary">Guardar</button>
+        </form>
+      </td>
+      <td class="text-end">{{ l.calculo.anticipos }}</td><td class="text-end">{{ l.calculo.afp }}</td><td class="text-end">{{ l.calculo.rc_iva }}</td><td class="text-end fw-bold">{{ l.calculo.liquido }}</td>
+    </tr>
+  {% empty %}<tr><td colspan="9" class="text-muted">No hay contratos con días trabajados.</td></tr>{% endfor %}
+  </tbody>
+  <tfoot><tr class="table-light fw-bold"><td colspan="3">Totales</td><td class="text-end">{{ datos.totales.sueldo_ganado }}</td><td class="text-end">{{ datos.totales.otros_ingresos }}</td><td class="text-end">{{ datos.totales.anticipos }}</td><td class="text-end">{{ datos.totales.afp }}</td><td class="text-end">{{ datos.totales.rc_iva }}</td><td class="text-end">{{ datos.totales.liquido }}</td></tr></tfoot>
+</table>
+</div>
+<form method="post" class="mt-3">{% csrf_token %}
+  <input type="hidden" name="accion" value="aprobar">
+  <button class="btn btn-success" {% if not datos.lineas %}disabled{% endif %}>Aprobar y cerrar planilla</button>
+  <a class="btn btn-outline-secondary" href="{% url 'planillas:procesar' anio mes %}">Volver a importar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block titulo %}Boleta de pago{% endblock %}
+{% block contenido %}
+<h1 class="h3">Boleta de pago · {{ boleta.planilla.mes }}/{{ boleta.planilla.gestion_id }}</h1>
+<p>{{ boleta.contrato.empleado.apellidos }} {{ boleta.contrato.empleado.nombres }} · CI {{ boleta.contrato.empleado_id }} · {{ boleta.dias_trab }} días trabajados</p>
+<table class="table table-sm w-auto"><thead><tr><th>Concepto</th><th class="text-end">Base</th><th class="text-end">%</th><th class="text-end">Monto</th></tr></thead><tbody>
+{% for d in detalles %}<tr><td>{{ d.concepto }}</td><td class="text-end">{{ d.base|default_if_none:"" }}</td><td class="text-end">{{ d.porcentaje|default_if_none:"" }}</td><td class="text-end">{{ d.monto }}</td></tr>{% endfor %}
+</tbody><tfoot>
+<tr><th colspan="3">Total ingresos</th><td class="text-end">{{ boleta.tot_ingresos }}</td></tr>
+<tr><th colspan="3">Total descuentos</th><td class="text-end">{{ boleta.tot_descuentos }}</td></tr>
+<tr><th colspan="3">Líquido pagable</th><td class="text-end">{{ boleta.liquido }}</td></tr></tfoot></table>
+<a class="btn btn-outline-primary btn-sm" href="{% url 'planillas:exportar_boleta' boleta.nro 'pdf' %}">PDF</a>
+<a class="btn btn-outline-primary btn-sm" href="{% url 'planillas:exportar_boleta' boleta.nro 'xlsx' %}">Excel</a>
+<a class="btn btn-outline-secondary btn-sm" href="{% url 'planillas:detalle' boleta.planilla.gestion_id boleta.planilla.mes %}">Volver</a>
+{% endblock %}
