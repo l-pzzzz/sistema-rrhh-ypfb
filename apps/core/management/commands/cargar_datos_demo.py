@@ -54,18 +54,20 @@ TIPOS_DOCUMENTO = ["CI", "TITULO", "CERTIFICADO"]
 # Haber básico 2026 de ejemplo por categoría (no son los haberes reales de la empresa).
 HABERES = {"A": Decimal("3500.00"), "B": Decimal("4200.00"), "C": Decimal("5000.00")}
 
-# Feriados nacionales de Bolivia 2026 (el Administrador los confirma en CU-13).
+# Feriados nacionales de Bolivia 2026 según el DS 5521 (traslados de enero y junio y feriados del 5/6 y 7/8).
 FERIADOS = [
     (datetime.date(2026, 1, 1), "Año Nuevo"),
-    (datetime.date(2026, 1, 22), "Día del Estado Plurinacional"),
+    (datetime.date(2026, 1, 23), "Día del Estado Plurinacional (trasladado del 22, DS 5521)"),
     (datetime.date(2026, 2, 16), "Carnaval (lunes)"),
     (datetime.date(2026, 2, 17), "Carnaval (martes)"),
     (datetime.date(2026, 4, 3), "Viernes Santo"),
     (datetime.date(2026, 5, 1), "Día del Trabajo"),
     (datetime.date(2026, 6, 4), "Corpus Christi"),
-    (datetime.date(2026, 6, 21), "Año Nuevo Andino Amazónico"),
+    (datetime.date(2026, 6, 5), "Feriado nacional (DS 5521)"),
+    (datetime.date(2026, 6, 22), "Año Nuevo Andino (trasladado del 21, DS 5521)"),
     (datetime.date(2026, 8, 6), "Día de la Patria"),
-    (datetime.date(2026, 11, 2), "Día de Todos los Santos"),
+    (datetime.date(2026, 8, 7), "Feriado nacional (DS 5521)"),
+    (datetime.date(2026, 11, 2), "Día de Todos los Difuntos"),
     (datetime.date(2026, 12, 25), "Navidad"),
 ]
 

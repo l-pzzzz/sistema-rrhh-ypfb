@@ -117,3 +117,10 @@ def test_tarea_programada_diaria():
     ContratoFactory(empleado=EmpleadoFactory(fecha_ingreso=INGRESO))
     with mock.patch("apps.kardex.tasks.timezone.localdate", return_value=datetime.date(2026, 11, 24)):
         assert tasks.recalcular_categorias() == 1
+
+
+def test_ingreso_futuro_tiene_categoria_a():
+    """Un empleado registrado antes de su fecha de ingreso tiene 0 años: categoría A (antes daba error 500)."""
+    hoy = datetime.date(2026, 10, 25)
+    categoria = ServicioContrato().categoria_por_antiguedad(datetime.date(2026, 11, 2), hoy)
+    assert categoria.pk == "A"

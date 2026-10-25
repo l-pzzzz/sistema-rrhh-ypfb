@@ -319,7 +319,8 @@ class ServicioContrato:
     def categoria_por_antiguedad(self, fecha_ingreso, hoy=None):
         """CU-02.2: categoría según los años cumplidos desde EMPLEADO.FechaIngreso (tabla CATEGORIA)."""
         hoy = hoy or timezone.localdate()
-        return self._categoria_para(anios_cumplidos(fecha_ingreso, hoy), list(Categoria.objects.all()))
+        # Un ingreso con fecha futura (contrato que empieza después) tiene 0 años de antigüedad.
+        return self._categoria_para(max(anios_cumplidos(fecha_ingreso, hoy), 0), list(Categoria.objects.all()))
 
     @staticmethod
     def haber_basico(categoria, anio):
@@ -454,7 +455,7 @@ class ServicioContrato:
         alertas = []
         vigentes = Contrato.objects.filter(estado=Contrato.Estado.VIGENTE).select_related("empleado")
         for contrato in vigentes:
-            nueva = self._categoria_para(anios_cumplidos(contrato.empleado.fecha_ingreso, hoy), categorias)
+            nueva = self._categoria_para(max(anios_cumplidos(contrato.empleado.fecha_ingreso, hoy), 0), categorias)
             if nueva.pk == contrato.categoria_id:
                 continue
             anterior = contrato.categoria_id
