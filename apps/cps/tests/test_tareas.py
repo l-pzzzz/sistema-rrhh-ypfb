@@ -38,8 +38,8 @@ def test_sin_cache_del_dia_se_calcula_en_el_momento(hoy):
     assert services.semaforos_en_cache(hoy)[f"A{afil.nro}"] == ("amarillo", 2)
 
 
-def test_correo_a_los_afiliadores_con_amarillos_y_rojos(hoy, monkeypatch):
-    monkeypatch.setenv("CORREO_AFILIADORES", "uno@ypfb.test, dos@ypfb.test")
+def test_correo_a_los_afiliadores_con_amarillos_y_rojos(hoy, settings):
+    settings.CORREO_AFILIADORES = ["uno@ypfb.test", "dos@ypfb.test"]
     registrar(nuevo_contrato("06/11/2026"))  # amarillo
     registrar(nuevo_contrato("02/11/2026"))  # vencida: rojo
     registrar(nuevo_contrato("12/11/2026"))  # vence el 19/11: verde
@@ -50,15 +50,15 @@ def test_correo_a_los_afiliadores_con_amarillos_y_rojos(hoy, monkeypatch):
     assert correo.body.index("[ROJO]") < correo.body.index("[AMARILLO]")
 
 
-def test_sin_destinatarios_no_envia(hoy, monkeypatch):
-    monkeypatch.setenv("CORREO_AFILIADORES", "")
+def test_sin_destinatarios_no_envia(hoy, settings):
+    settings.CORREO_AFILIADORES = []
     registrar(nuevo_contrato("02/11/2026"))
     assert tasks.actualizar_semaforo_cps() == 0
     assert mail.outbox == []
 
 
-def test_sin_novedades_no_envia(hoy, monkeypatch):
-    monkeypatch.setenv("CORREO_AFILIADORES", "uno@ypfb.test")
+def test_sin_novedades_no_envia(hoy, settings):
+    settings.CORREO_AFILIADORES = ["uno@ypfb.test"]
     registrar(nuevo_contrato("12/11/2026"))
     tasks.actualizar_semaforo_cps()
     assert mail.outbox == []

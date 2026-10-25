@@ -146,8 +146,29 @@ CELERY_BROKER_URL = env("CELERY_BROKER_URL", default=_url_redis(0))
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
 
+# Las tareas de cada app (PROGRAMACION en apps/<app>/tasks.py) se unen en config/celery.py.
+APPS_CON_TAREAS = ["kardex", "cps"]
+
+# Correo: consola por defecto (desarrollo); en producción EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend.
 EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = env("EMAIL_HOST", default="localhost")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="rrhh@localhost")
+
+
+def _correos(nombre):
+    """Lista de direcciones de una variable del .env separadas por comas; vacía = solo pantalla."""
+    return [d.strip() for d in env(nombre, default="").split(",") if d.strip()]
+
+
+# Destinatarios de las alertas: Kardex y CPS (RF-03, RF-07, RF-08), Vacaciones y lactancias (RF-19),
+# Planillas y respaldos (RF-14, RF-25).
+CORREO_AFILIADORES = _correos("CORREO_AFILIADORES")
+CORREO_RESP_VACACIONES = _correos("CORREO_RESP_VACACIONES")
+CORREO_ADMINISTRADOR = _correos("CORREO_ADMINISTRADOR")
 
 LOGGING = {
     "version": 1,

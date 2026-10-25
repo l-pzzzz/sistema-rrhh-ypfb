@@ -1,10 +1,10 @@
 """Tareas programadas del módulo CPS (docs/06): semáforo diario y resumen por correo (RF-07, RF-08)."""
 
 import logging
-import os
 
 from celery import shared_task
 from celery.schedules import crontab
+from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
 
@@ -23,7 +23,7 @@ PROGRAMACION = {
 
 def destinatarios():
     """Direcciones de CORREO_AFILIADORES (.env), separadas por comas; vacía = solo pantalla."""
-    return [d.strip() for d in os.environ.get("CORREO_AFILIADORES", "").split(",") if d.strip()]
+    return list(settings.CORREO_AFILIADORES)
 
 
 def resumen(hoy):
