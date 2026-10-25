@@ -1,4 +1,7 @@
 # Desarrollo: docker compose up --build  →  https://localhost:8443 (certificado autofirmado).
+# docker-compose.override.yml (solo desarrollo) publica MySQL y Redis en 127.0.0.1; este archivo no los publica.
+# Pruebas aisladas por agente: docker compose -p rrhh-<app> -f docker-compose.yml run --rm web pytest
+#   (al terminar: docker compose -p rrhh-<app> -f docker-compose.yml down -v)
 # HTTPS_PORT y HTTP_PORT (en .env) fijan los puertos publicados; en producción, 443 y 80.
 # Despliegue (docs/06): nginx (HTTPS) → web (Gunicorn + Django), worker y beat (Celery), redis y MySQL 8.
 
@@ -7,13 +10,13 @@ x-app: &app
   env_file: .env
   environment:
     DB_HOST: db
-    REDIS_URL: redis://redis:6379/1
-    CELERY_BROKER_URL: redis://redis:6379/0
+    REDIS_URL: redis://:${REDIS_PASSWORD:?Defina REDIS_PASSWORD en .env}@redis:6379/1
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?Defina REDIS_PASSWORD en .env}@redis:6379/0
   depends_on:
     db:
       condition: service_healthy
     redis:
-      condition: service_started
+      condition: service_healthy
   volumes:
     - media:/app/media
   restart: unless-stopped
@@ -55,8 +58,6 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:?Defina DB_PASSWORD en .env}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Defina DB_ROOT_PASSWORD en .env}
     command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
-    ports:
-      - "3306:3306"
     volumes:
       - mysql:/var/lib/mysql
       - ./docker/mysql/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
@@ -69,8 +70,14 @@ services:
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Defina REDIS_PASSWORD en .env}
+    command: ["sh", "-c", "exec redis-server --requirepass \"$$REDIS_PASSWORD\""]
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
     restart: unless-stopped
 
 volumes:

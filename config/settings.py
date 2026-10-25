@@ -4,6 +4,7 @@ Solo la modifica el agente de la fase base o el integrador (AGENTS.md §3).
 """
 
 from pathlib import Path
+from urllib.parse import quote
 
 import environ
 
@@ -84,12 +85,20 @@ DATABASES = {
     }
 }
 
+# Redis con contraseña (REDIS_PASSWORD). Sin Redis configurado se usa una caché local en memoria.
+REDIS_PASSWORD = env("REDIS_PASSWORD", default="")
+REDIS_HOST = env("REDIS_HOST", default="127.0.0.1")
+
+
+def _url_redis(base):
+    clave = f":{quote(REDIS_PASSWORD, safe='')}@" if REDIS_PASSWORD else ""
+    return f"redis://{clave}{REDIS_HOST}:6379/{base}"
+
+
+REDIS_URL = env("REDIS_URL", default=_url_redis(1))
 CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": env("REDIS_URL", default="redis://127.0.0.1:6379/1"),
-    }
-    if env("REDIS_URL", default="")
+    "default": {"BACKEND": "django.core.cache.backends.redis.RedisCache", "LOCATION": REDIS_URL}
+    if REDIS_PASSWORD or env("REDIS_URL", default="")
     else {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
 }
 
@@ -133,7 +142,7 @@ DOCUMENTO_TAMANO_MAXIMO = 5 * 1024 * 1024
 DOCUMENTO_EXTENSIONES = ["pdf", "jpg", "jpeg", "png"]
 
 # Celery + Redis (docs/06, tareas programadas).
-CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://127.0.0.1:6379/0")
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default=_url_redis(0))
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
 
