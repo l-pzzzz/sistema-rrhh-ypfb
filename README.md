@@ -14,6 +14,21 @@ Tesis con metodología PUD. Python 3.12 · Django 5.2 · MySQL 8 · Bootstrap 5 
 | 4 | `orca/c2_administracion.md` · `orca/c2_vacaciones.md` · `orca/c2_finiquitos.md` (en paralelo) | `c2-*` | Quina · Rivera · Trujillo |
 | 5 | `orca/99_integracion.md` | `main` | Equipo |
 
+## Cómo levantar la demo en otra computadora (forma rápida)
+
+1. Instalar **Git** y **Docker Desktop** (con WSL 2; reiniciar si lo pide) y abrir Docker Desktop.
+2. Clonar el repositorio (la cuenta de GitHub debe tener acceso, porque es privado):
+   ```powershell
+   cd $HOME\Documents
+   git clone https://github.com/l-pzzzz/sistema-rrhh-ypfb.git
+   cd sistema-rrhh-ypfb
+   ```
+3. Ejecutar el script, que crea el `.env` con secretos propios, levanta Docker, espera las migraciones, carga los datos de demostración y abre el navegador:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\scripts\levantar_demo.ps1
+   ```
+4. Copiar las contraseñas que muestra la consola (se ven una sola vez) y entrar en https://localhost:8443.
+
 ## Cómo levantar la demo
 
 Requisitos: Docker Desktop y Git. Comandos en PowerShell, desde la carpeta del repositorio. La demo solo corre con `DEBUG=True` (desarrollo).
