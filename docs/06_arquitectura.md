@@ -27,7 +27,7 @@ contrato_retirado = Signal()     # kwargs: contrato (con FechaRetiro, TipoRetiro
 | Señal | Quién escucha | Qué hace |
 |---|---|---|
 | contrato_registrado | cps | Crea AFILIACION CPS en estado PENDIENTE con FechaLimite = inicio + PLAZO_AFIL días hábiles (el día de inicio cuenta como día 1). |
-| contrato_retirado | cps | Calcula FechaLimBaja = FechaRetiro + PLAZO_BAJA días hábiles. |
+| contrato_retirado | cps | Calcula FechaLimBaja = FechaRetiro + PLAZO_BAJA días hábiles, con el mismo criterio que la afiliación: el día del retiro cuenta como día 1 (`incluye_inicio=True`). |
 | contrato_retirado | administracion | Desactiva la cuenta de usuario del titular, si existe. |
 | contrato_retirado | finiquitos | Habilita el cálculo del finiquito del contrato. |
 
