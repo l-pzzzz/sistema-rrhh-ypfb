@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}Formulario F110{% endblock %}
+{% block contenido %}
+<h1 class="h3">Registrar formulario F110</h1>
+<p class="text-muted">El crédito fiscal lo calcula el sistema. Presentado después del día DIA_F110 se aplica al mes siguiente.</p>
+{% include "planillas/_form.html" with boton="Registrar F110" %}
+<h2 class="h5 mt-4">Últimos F110</h2>
+<table class="table table-sm"><thead><tr><th>CI</th><th>Declarado</th><th class="text-end">Facturas</th><th>Presentado</th><th>Se aplica a</th></tr></thead><tbody>
+{% for f, aplicacion in recientes %}<tr><td>{{ f.contrato.empleado_id }}</td><td>{{ f.mes }}/{{ f.anio }}</td><td class="text-end">{{ f.monto_fact }}</td><td>{{ f.fecha_pres|date:"d/m/Y" }}</td><td>{{ aplicacion.1 }}/{{ aplicacion.0 }}</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

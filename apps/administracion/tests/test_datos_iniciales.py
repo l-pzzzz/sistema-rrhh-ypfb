@@ -38,6 +38,12 @@ def test_parametros_iniciales_del_caso():
         "VALOR_LACT": Decimal("1.00"),
         "PLAZO_FINIQ": Decimal("15.00"),
         "ANTIG_MIN_INDEM": Decimal("90.00"),
+        # Las 5 claves de planillas las carga la migración planillas.0002 (docs/04).
+        "UMBRAL_RCIVA": Decimal("2.00"),
+        "MNI_RCIVA": Decimal("2.00"),
+        "PORC_ANTICIPO": Decimal("50.00"),
+        "DIA_ANTICIPO": Decimal("15.00"),
+        "DIA_F110": Decimal("15.00"),
     }
     assert not Parametro.objects.filter(gestion_id=2026, fuente__isnull=True).exists()
 

@@ -1,0 +1,16 @@
+<form method="post" {% if multipart %}enctype="multipart/form-data"{% endif %} novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>{% endif %}
+  <div class="row g-3">
+    {% for campo in form %}
+    <div class="col-12 col-md-4">
+      <label for="{{ campo.id_for_label }}" class="form-label">{{ campo.label }}</label>
+      {{ campo }}
+      {% if campo.help_text %}<div class="form-text">{{ campo.help_text }}</div>{% endif %}
+      {% for e in campo.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  <button type="submit" class="btn btn-primary mt-3">{{ boton|default:"Guardar" }}</button>
+</form>
+<script>document.querySelectorAll("form input:not([type=hidden]):not([type=file])").forEach(function (i) { i.classList.add("form-control"); });</script>

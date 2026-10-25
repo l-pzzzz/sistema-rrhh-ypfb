@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block titulo %}Planilla cerrada{% endblock %}
+{% block contenido %}
+<h1 class="h3">Planilla · {{ nombre_mes }} {{ anio }} <span class="badge text-bg-{% if planilla.estado == 'CERRADA' %}success{% else %}warning{% endif %}">{{ planilla.estado }}</span></h1>
+{% if planilla.estado == 'CERRADA' %}
+<p class="text-muted">Aprobada por {{ planilla.aprobado_por_id }} el {{ planilla.fecha_cierre|date:"d/m/Y" }}.</p>
+<a class="btn btn-outline-primary btn-sm" href="{% url 'planillas:exportar' anio mes 'pdf' %}">Planilla PDF</a>
+<a class="btn btn-outline-primary btn-sm" href="{% url 'planillas:exportar' anio mes 'xlsx' %}">Planilla Excel</a>
+{% endif %}
+<table class="table table-sm mt-3"><thead><tr><th>CI</th><th>Trabajador</th><th>Días</th><th class="text-end">Líquido</th><th></th></tr></thead><tbody>
+{% for b in boletas %}
+  <tr><td>{{ b.contrato.empleado_id }}</td><td>{{ b.contrato.empleado.apellidos }} {{ b.contrato.empleado.nombres }}</td><td>{{ b.dias_trab }}</td><td class="text-end">{{ b.liquido }}</td><td class="text-end"><a href="{% url 'planillas:boleta' b.nro %}">Boleta</a></td></tr>
+{% endfor %}
+</tbody></table>
+{% endblock %}

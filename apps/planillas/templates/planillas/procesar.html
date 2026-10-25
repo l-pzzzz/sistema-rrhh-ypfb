@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titulo %}Procesar planilla{% endblock %}
+{% block contenido %}
+<h1 class="h3">Procesar planilla · {{ nombre_mes }} {{ anio }}</h1>
+{% include "planillas/_form.html" with multipart=True boton="Importar marcaciones" %}
+{% if resultado %}
+<h2 class="h5 mt-4">Inconsistencias ({{ resultado.inconsistencias|length }})</h2>
+{% if resultado.inconsistencias %}
+<table class="table table-sm"><thead><tr><th>CI</th><th>Motivo</th></tr></thead><tbody>
+  {% for i in resultado.inconsistencias %}<tr><td>{{ i.ci }}</td><td>{{ i.motivo }}</td></tr>{% endfor %}
+</tbody></table>
+<p class="text-muted small">Puede continuar sin esos registros o cancelar y corregir el archivo.</p>
+{% else %}<p class="text-muted">Sin inconsistencias.</p>{% endif %}
+{% endif %}
+<a class="btn btn-success mt-3" href="{% url 'planillas:preplanilla' anio mes %}">Continuar a la preplanilla</a>
+<a class="btn btn-outline-secondary mt-3" href="{% url 'planillas:inicio' %}?anio={{ anio }}">Cancelar</a>
+{% endblock %}
