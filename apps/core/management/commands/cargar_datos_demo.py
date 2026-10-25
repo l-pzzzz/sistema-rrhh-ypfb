@@ -14,6 +14,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils import timezone
 
 from apps.administracion.models import Bitacora, Feriado, GestionSalarial, Rol, Usuario
 from apps.core import auditoria
@@ -184,8 +185,9 @@ class Command(BaseCommand):
             if Empleado.objects.filter(pk=ci).exists():
                 continue
             reciente = n > CANTIDAD_EMPLEADOS - RECIENTES
-            inicio = INICIO_RECIENTES if reciente else INICIO_ANTIGUOS
-            ingreso = inicio if reciente else INGRESOS_ANTIGUOS[(n - 1) % len(INGRESOS_ANTIGUOS)]
+            # Un contrato no puede iniciar en el futuro (la categoría sale de la antigüedad): se limita a hoy.
+            inicio = min(INICIO_RECIENTES if reciente else INICIO_ANTIGUOS, timezone.localdate())
+            ingreso = inicio if reciente else min(INGRESOS_ANTIGUOS[(n - 1) % len(INGRESOS_ANTIGUOS)], inicio)
             empleado = servicio_empleado.registrar({
                 "ci": ci,
                 "codigo": f"DEMO-{n:03d}",
