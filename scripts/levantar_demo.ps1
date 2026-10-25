@@ -1,4 +1,4 @@
-# Levanta la demo del sistema en Windows (PowerShell 5.1 o superior).
+﻿# Levanta la demo del sistema en Windows (PowerShell 5.1 o superior).
 # Uso, desde la carpeta del repositorio:
 #   powershell -ExecutionPolicy Bypass -File .\scripts\levantar_demo.ps1
 # Requisitos: Git y Docker Desktop abierto. No necesita Python.
