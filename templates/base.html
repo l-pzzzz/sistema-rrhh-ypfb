@@ -23,9 +23,9 @@
           {% for opcion in menu %}
           <li class="nav-item">
             {% if opcion.url %}
-            <a class="nav-link" href="{{ opcion.url }}">{{ opcion.texto }}</a>
+            <a class="nav-link" href="{{ opcion.url }}">{{ opcion.texto }}{% if opcion.solo_lectura %} <span class="badge text-bg-light">solo lectura</span>{% endif %}</a>
             {% else %}
-            <span class="nav-link disabled" aria-disabled="true">{{ opcion.texto }}</span>
+            <span class="nav-link disabled" aria-disabled="true">{{ opcion.texto }}{% if opcion.solo_lectura %} <span class="badge text-bg-light">solo lectura</span>{% endif %}</span>
             {% endif %}
           </li>
           {% endfor %}
