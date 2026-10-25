@@ -1,0 +1,1474 @@
+{
+ "tables": {
+  "PERSONA": {
+   "desc": "Datos comunes de empleados y dependientes (superclase Persona).",
+   "cols": [
+    [
+     "CI",
+     "VARCHAR(15)",
+     "PK",
+     false,
+     "Cédula de identidad con complemento opcional (1234567-1A)",
+     null
+    ],
+    [
+     "Nombres",
+     "VARCHAR(60)",
+     "",
+     false,
+     "Nombres",
+     null
+    ],
+    [
+     "Apellidos",
+     "VARCHAR(60)",
+     "",
+     false,
+     "Apellidos",
+     null
+    ],
+    [
+     "FechaNac",
+     "DATE",
+     "",
+     false,
+     "Fecha de nacimiento",
+     null
+    ],
+    [
+     "Sexo",
+     "CHAR(1)",
+     "",
+     false,
+     "M / F (CHECK)",
+     null
+    ],
+    [
+     "Telefono",
+     "VARCHAR(15)",
+     "",
+     true,
+     "Teléfono de contacto",
+     null
+    ]
+   ]
+  },
+  "EMPLEADO": {
+   "desc": "Expediente laboral del trabajador (Kardex).",
+   "cols": [
+    [
+     "CI",
+     "VARCHAR(15)",
+     "PK, FK",
+     false,
+     "Cédula; referencia a PERSONA",
+     "PERSONA.CI"
+    ],
+    [
+     "Codigo",
+     "VARCHAR(10)",
+     "",
+     false,
+     "Código interno único (UNIQUE, EMP-0001)",
+     null
+    ],
+    [
+     "FechaIngreso",
+     "DATE",
+     "",
+     false,
+     "Inicio de la relación laboral; base de la antigüedad",
+     null
+    ],
+    [
+     "Direccion",
+     "VARCHAR(120)",
+     "",
+     true,
+     "Domicilio",
+     null
+    ],
+    [
+     "NomEmerg",
+     "VARCHAR(80)",
+     "",
+     true,
+     "Nombre del contacto de emergencia",
+     null
+    ],
+    [
+     "ParEmerg",
+     "VARCHAR(20)",
+     "",
+     true,
+     "Parentesco del contacto de emergencia",
+     null
+    ],
+    [
+     "TelEmerg",
+     "VARCHAR(15)",
+     "",
+     true,
+     "Teléfono del contacto de emergencia",
+     null
+    ],
+    [
+     "Estado",
+     "VARCHAR(10)",
+     "",
+     false,
+     "ACTIVO / RETIRADO",
+     null
+    ]
+   ]
+  },
+  "DEPENDIENTE": {
+   "desc": "Familiar del trabajador; se registra con un solo trabajador.",
+   "cols": [
+    [
+     "CI",
+     "VARCHAR(15)",
+     "PK, FK",
+     false,
+     "Cédula; referencia a PERSONA",
+     "PERSONA.CI"
+    ],
+    [
+     "CIEmp",
+     "VARCHAR(15)",
+     "FK",
+     false,
+     "Trabajador del que depende",
+     "EMPLEADO.CI"
+    ],
+    [
+     "Parentesco",
+     "VARCHAR(20)",
+     "",
+     false,
+     "CONYUGE / CONVIVIENTE / HIJO / PADRE / MADRE (CHECK)",
+     null
+    ]
+   ]
+  },
+  "TIPO DOCUMENTO": {
+   "desc": "Catálogo de tipos de documento.",
+   "cols": [
+    [
+     "Id",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "Descripcion",
+     "VARCHAR(40)",
+     "",
+     false,
+     "CI, título, certificado, etc.",
+     null
+    ]
+   ]
+  },
+  "DOCUMENTO": {
+   "desc": "Documentos digitalizados de empleados y dependientes (PDF, JPG o PNG; máximo 5 MB).",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "CIPer",
+     "VARCHAR(15)",
+     "FK",
+     false,
+     "Persona dueña del documento",
+     "PERSONA.CI"
+    ],
+    [
+     "IdTipo",
+     "INT",
+     "FK",
+     false,
+     "Tipo de documento",
+     "TIPO DOCUMENTO.Id"
+    ],
+    [
+     "FechaEmision",
+     "DATE",
+     "",
+     true,
+     "Fecha de emisión",
+     null
+    ],
+    [
+     "Archivo",
+     "VARCHAR(200)",
+     "",
+     false,
+     "Ruta del archivo digitalizado",
+     null
+    ],
+    [
+     "FechaCarga",
+     "DATETIME",
+     "",
+     false,
+     "Fecha y hora de carga",
+     null
+    ],
+    [
+     "Vigente",
+     "BOOLEAN",
+     "",
+     false,
+     "FALSE cuando fue reemplazado (historial)",
+     null
+    ]
+   ]
+  },
+  "CATEGORIA": {
+   "desc": "Categorías salariales por antigüedad en años cumplidos.",
+   "cols": [
+    [
+     "Cod",
+     "CHAR(1)",
+     "PK",
+     false,
+     "A, B o C (CHECK Cod IN ('A','B','C'))",
+     null
+    ],
+    [
+     "AñosMin",
+     "TINYINT",
+     "",
+     false,
+     "Antigüedad mínima (0, 6, 16)",
+     null
+    ],
+    [
+     "AñosMax",
+     "TINYINT",
+     "",
+     true,
+     "Antigüedad máxima (5, 15; nulo en C)",
+     null
+    ]
+   ]
+  },
+  "AJUSTE SALARIAL": {
+   "desc": "Haber básico de cada categoría por gestión.",
+   "cols": [
+    [
+     "Id",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "CodCat",
+     "CHAR(1)",
+     "FK",
+     false,
+     "Categoría ajustada",
+     "CATEGORIA.Cod"
+    ],
+    [
+     "Año",
+     "SMALLINT",
+     "FK",
+     false,
+     "Gestión del ajuste (UNIQUE con CodCat)",
+     "GESTION SALARIAL.Año"
+    ],
+    [
+     "HaberBasico",
+     "DECIMAL(10,2)",
+     "",
+     false,
+     "Haber básico vigente",
+     null
+    ]
+   ]
+  },
+  "CONTRATO": {
+   "desc": "Contrato del trabajador: eje del sistema; de él dependen afiliación, planillas, anticipos, F110, vacaciones, lactancia, evaluaciones y finiquito.",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Número de contrato",
+     null
+    ],
+    [
+     "CIEmp",
+     "VARCHAR(15)",
+     "FK",
+     false,
+     "Trabajador contratado",
+     "EMPLEADO.CI"
+    ],
+    [
+     "CodCat",
+     "CHAR(1)",
+     "FK",
+     false,
+     "Categoría vigente; se actualiza por antigüedad (RF-03) y queda en la bitácora",
+     "CATEGORIA.Cod"
+    ],
+    [
+     "FechaInicio",
+     "DATE",
+     "",
+     false,
+     "Inicio del contrato",
+     null
+    ],
+    [
+     "FechaFin",
+     "DATE",
+     "",
+     true,
+     "Fin previsto (nulo si es indefinido; CHECK > FechaInicio)",
+     null
+    ],
+    [
+     "FechaRetiro",
+     "DATE",
+     "",
+     true,
+     "Fecha efectiva del retiro (nulo si vigente; CHECK >= FechaInicio)",
+     null
+    ],
+    [
+     "TipoRetiro",
+     "VARCHAR(25)",
+     "",
+     true,
+     "VOLUNTARIO / DESPIDO JUSTIFICADO / DESPIDO INJUSTIFICADO (nulo si vigente)",
+     null
+    ],
+    [
+     "MotivoRetiro",
+     "VARCHAR(200)",
+     "",
+     true,
+     "Motivo del retiro",
+     null
+    ],
+    [
+     "Estado",
+     "VARCHAR(10)",
+     "",
+     false,
+     "VIGENTE / CONCLUIDO (un solo VIGENTE por empleado)",
+     null
+    ]
+   ]
+  },
+  "CONTRATO CARGO": {
+   "desc": "Tabla intermedia: un contrato tiene uno o varios cargos.",
+   "cols": [
+    [
+     "NroCon",
+     "INT",
+     "PK, FK",
+     false,
+     "Contrato",
+     "CONTRATO.Nro"
+    ],
+    [
+     "IdCargo",
+     "INT",
+     "PK, FK",
+     false,
+     "Cargo",
+     "CARGO.Id"
+    ]
+   ]
+  },
+  "CARGO": {
+   "desc": "Cargos de la empresa.",
+   "cols": [
+    [
+     "Id",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "Nombre",
+     "VARCHAR(60)",
+     "",
+     false,
+     "Nombre del cargo",
+     null
+    ],
+    [
+     "IdUbi",
+     "INT",
+     "FK",
+     false,
+     "Departamento donde se ejerce",
+     "UBICACION.Id"
+    ]
+   ]
+  },
+  "FUNCION": {
+   "desc": "Funciones de cada cargo.",
+   "cols": [
+    [
+     "Id",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "Descripcion",
+     "VARCHAR(150)",
+     "",
+     false,
+     "Función",
+     null
+    ],
+    [
+     "IdCargo",
+     "INT",
+     "FK",
+     false,
+     "Cargo al que pertenece",
+     "CARGO.Id"
+    ]
+   ]
+  },
+  "UBICACION": {
+   "desc": "Departamentos o secciones.",
+   "cols": [
+    [
+     "Id",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "Departamento",
+     "VARCHAR(60)",
+     "",
+     false,
+     "Nombre del departamento",
+     null
+    ]
+   ]
+  },
+  "AFILIACION CPS": {
+   "desc": "Afiliación y desafiliación a la CPS de cada contrato (no se eliminan registros).",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "NroCon",
+     "INT",
+     "FK",
+     false,
+     "Contrato que origina la afiliación (UNIQUE: una afiliación por contrato)",
+     "CONTRATO.Nro"
+    ],
+    [
+     "Tipo",
+     "VARCHAR(10)",
+     "",
+     false,
+     "NUEVO / REINGRESO",
+     null
+    ],
+    [
+     "FechaLimite",
+     "DATE",
+     "",
+     false,
+     "Inicio laboral + plazo de afiliación en días hábiles",
+     null
+    ],
+    [
+     "FechaAfil",
+     "DATE",
+     "",
+     true,
+     "Fecha de alta en la CPS",
+     null
+    ],
+    [
+     "Matricula",
+     "VARCHAR(20)",
+     "",
+     true,
+     "N° de matrícula CPS del asegurado",
+     null
+    ],
+    [
+     "FechaLimBaja",
+     "DATE",
+     "",
+     true,
+     "CONTRATO.FechaRetiro + plazo de baja en días hábiles",
+     null
+    ],
+    [
+     "FechaDesafil",
+     "DATE",
+     "",
+     true,
+     "Fecha de presentación del aviso de baja",
+     null
+    ],
+    [
+     "Estado",
+     "VARCHAR(20)",
+     "",
+     false,
+     "PENDIENTE / EN PLAZO / FUERA DE PLAZO / DESAFILIADO",
+     null
+    ]
+   ]
+  },
+  "GESTION SALARIAL": {
+   "desc": "Gestión anual de planillas.",
+   "cols": [
+    [
+     "Año",
+     "SMALLINT",
+     "PK",
+     false,
+     "Año de la gestión",
+     null
+    ],
+    [
+     "Estado",
+     "VARCHAR(10)",
+     "",
+     false,
+     "ABIERTA / CERRADA (cerrada: parámetros no editables)",
+     null
+    ]
+   ]
+  },
+  "PARAMETRO": {
+   "desc": "Parámetros legales y de negocio por gestión, en formato clave-valor (patrón Singleton).",
+   "cols": [
+    [
+     "Año",
+     "SMALLINT",
+     "PK, FK",
+     false,
+     "Gestión a la que aplica",
+     "GESTION SALARIAL.Año"
+    ],
+    [
+     "Clave",
+     "VARCHAR(20)",
+     "PK",
+     false,
+     "SMN, PORC_AFP, UMBRAL_AFP, PORC_IVA, PLAZO_AFIL, PLAZO_BAJA, EDAD_MAX_HIJO, DIAS_LAB, VALOR_LACT, PLAZO_FINIQ",
+     null
+    ],
+    [
+     "Valor",
+     "DECIMAL(12,2)",
+     "",
+     false,
+     "Valor del parámetro (porcentajes entre 0 y 100; plazos > 0)",
+     null
+    ],
+    [
+     "Fuente",
+     "VARCHAR(80)",
+     "",
+     true,
+     "Origen del valor (caso de estudio o norma)",
+     null
+    ]
+   ]
+  },
+  "FERIADO": {
+   "desc": "Feriados de cada gestión para el cálculo de días hábiles.",
+   "cols": [
+    [
+     "Id",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "Fecha",
+     "DATE",
+     "",
+     false,
+     "Fecha del feriado (UNIQUE con Alcance e IdUbi)",
+     null
+    ],
+    [
+     "Descripcion",
+     "VARCHAR(60)",
+     "",
+     false,
+     "Motivo del feriado",
+     null
+    ],
+    [
+     "Alcance",
+     "VARCHAR(15)",
+     "",
+     false,
+     "NACIONAL / DEPARTAMENTAL",
+     null
+    ],
+    [
+     "IdUbi",
+     "INT",
+     "FK",
+     true,
+     "Departamento (nulo si es nacional)",
+     "UBICACION.Id"
+    ]
+   ]
+  },
+  "PLANILLA": {
+   "desc": "Planilla mensual de sueldos (12 por gestión).",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "Año",
+     "SMALLINT",
+     "FK",
+     false,
+     "Gestión",
+     "GESTION SALARIAL.Año"
+    ],
+    [
+     "Mes",
+     "TINYINT",
+     "",
+     false,
+     "1 a 12 (UNIQUE con Año)",
+     null
+    ],
+    [
+     "Estado",
+     "VARCHAR(12)",
+     "",
+     false,
+     "PREPLANILLA / CERRADA",
+     null
+    ],
+    [
+     "FechaCierre",
+     "DATE",
+     "",
+     true,
+     "Fecha de cierre",
+     null
+    ],
+    [
+     "AprobadoPor",
+     "VARCHAR(30)",
+     "FK",
+     true,
+     "Usuario que aprobó el cierre",
+     "USUARIO.Login"
+    ]
+   ]
+  },
+  "BOLETA PAGO": {
+   "desc": "Boleta de pago de cada trabajador en una planilla.",
+   "cols": [
+    [
+     "NroB",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "NroPla",
+     "INT",
+     "FK",
+     false,
+     "Planilla mensual",
+     "PLANILLA.Nro"
+    ],
+    [
+     "NroCon",
+     "INT",
+     "FK",
+     false,
+     "Contrato del trabajador (UNIQUE con NroPla)",
+     "CONTRATO.Nro"
+    ],
+    [
+     "DiasTrab",
+     "TINYINT",
+     "",
+     false,
+     "Días trabajados (0 a 30)",
+     null
+    ],
+    [
+     "TotIngresos",
+     "DECIMAL(10,2)",
+     "",
+     false,
+     "Total ingresos (histórico)",
+     null
+    ],
+    [
+     "TotDescuentos",
+     "DECIMAL(10,2)",
+     "",
+     false,
+     "Total descuentos (histórico)",
+     null
+    ],
+    [
+     "Liquido",
+     "DECIMAL(10,2)",
+     "",
+     false,
+     "Líquido pagable (histórico)",
+     null
+    ]
+   ]
+  },
+  "DETALLE BOLETA": {
+   "desc": "Conceptos calculados de cada boleta con la base y el porcentaje aplicados (fotografía histórica).",
+   "cols": [
+    [
+     "NroB",
+     "INT",
+     "PK, FK",
+     false,
+     "Boleta",
+     "BOLETA PAGO.NroB"
+    ],
+    [
+     "Concepto",
+     "VARCHAR(20)",
+     "PK",
+     false,
+     "SUELDO GANADO / OTROS INGRESOS / ANTICIPO / AFP / RC-IVA / SALDO RC-IVA",
+     null
+    ],
+    [
+     "Base",
+     "DECIMAL(10,2)",
+     "",
+     true,
+     "Base de cálculo usada",
+     null
+    ],
+    [
+     "Porcentaje",
+     "DECIMAL(5,2)",
+     "",
+     true,
+     "Porcentaje aplicado en ese mes",
+     null
+    ],
+    [
+     "Monto",
+     "DECIMAL(10,2)",
+     "",
+     false,
+     "Importe del concepto",
+     null
+    ]
+   ]
+  },
+  "ANTICIPO": {
+   "desc": "Anticipos de sueldo (después del día 15; suma mensual hasta 50 % del haber básico).",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "NroCon",
+     "INT",
+     "FK",
+     false,
+     "Contrato al que se descuenta",
+     "CONTRATO.Nro"
+    ],
+    [
+     "Fecha",
+     "DATE",
+     "",
+     false,
+     "Fecha del anticipo (día > 15)",
+     null
+    ],
+    [
+     "Monto",
+     "DECIMAL(10,2)",
+     "",
+     false,
+     "Monto del anticipo (> 0)",
+     null
+    ],
+    [
+     "NroPla",
+     "INT",
+     "FK",
+     true,
+     "Planilla en la que se descontó (una sola vez)",
+     "PLANILLA.Nro"
+    ]
+   ]
+  },
+  "FORMULARIO F110": {
+   "desc": "Descargo de facturas para el crédito fiscal del RC-IVA.",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "NroCon",
+     "INT",
+     "FK",
+     false,
+     "Contrato del trabajador que declara",
+     "CONTRATO.Nro"
+    ],
+    [
+     "Año",
+     "SMALLINT",
+     "",
+     false,
+     "Gestión declarada",
+     null
+    ],
+    [
+     "Mes",
+     "TINYINT",
+     "",
+     false,
+     "Mes declarado (UNIQUE con NroCon y Año)",
+     null
+    ],
+    [
+     "MontoFact",
+     "DECIMAL(10,2)",
+     "",
+     false,
+     "Total de facturas presentadas",
+     null
+    ],
+    [
+     "FechaPres",
+     "DATE",
+     "",
+     false,
+     "Fecha de presentación (después del 15 se aplica al mes siguiente)",
+     null
+    ]
+   ]
+  },
+  "MARCACION": {
+   "desc": "Días trabajados importados del control de asistencia (patrón Adapter).",
+   "cols": [
+    [
+     "Id",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "NroCon",
+     "INT",
+     "FK",
+     false,
+     "Contrato del trabajador",
+     "CONTRATO.Nro"
+    ],
+    [
+     "Año",
+     "SMALLINT",
+     "",
+     false,
+     "Gestión",
+     null
+    ],
+    [
+     "Mes",
+     "TINYINT",
+     "",
+     false,
+     "Mes (UNIQUE con NroCon y Año)",
+     null
+    ],
+    [
+     "DiasTrab",
+     "TINYINT",
+     "",
+     false,
+     "Días trabajados en el mes (0 a 30)",
+     null
+    ]
+   ]
+  },
+  "SOLICITUD VACACION": {
+   "desc": "Vacaciones y licencias firmadas por el jefe inmediato.",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "NroCon",
+     "INT",
+     "FK",
+     false,
+     "Contrato del trabajador que solicita",
+     "CONTRATO.Nro"
+    ],
+    [
+     "Tipo",
+     "VARCHAR(10)",
+     "",
+     false,
+     "VACACION / LICENCIA",
+     null
+    ],
+    [
+     "FechaSol",
+     "DATE",
+     "",
+     false,
+     "Fecha de solicitud",
+     null
+    ],
+    [
+     "FechaFirma",
+     "DATE",
+     "",
+     false,
+     "Fecha de firma del jefe inmediato",
+     null
+    ],
+    [
+     "FechaDesde",
+     "DATE",
+     "",
+     false,
+     "Inicio (licencia: al menos un día después de FechaSol)",
+     null
+    ],
+    [
+     "FechaHasta",
+     "DATE",
+     "",
+     false,
+     "Fin (>= FechaDesde)",
+     null
+    ],
+    [
+     "Dias",
+     "DECIMAL(4,1)",
+     "",
+     false,
+     "Días hábiles descontados del saldo",
+     null
+    ]
+   ]
+  },
+  "ENTREGA LACTANCIA": {
+   "desc": "Entregas mensuales del subsidio de lactancia (en especie, 12 por hijo).",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "NroCon",
+     "INT",
+     "FK",
+     false,
+     "Contrato del trabajador que da derecho al subsidio",
+     "CONTRATO.Nro"
+    ],
+    [
+     "CIBenef",
+     "VARCHAR(15)",
+     "FK",
+     false,
+     "Beneficiaria (esposa o conviviente dependiente)",
+     "DEPENDIENTE.CI"
+    ],
+    [
+     "CIHijo",
+     "VARCHAR(15)",
+     "FK",
+     false,
+     "Hijo o hija que origina el subsidio",
+     "DEPENDIENTE.CI"
+    ],
+    [
+     "Fecha",
+     "DATE",
+     "",
+     false,
+     "Fecha de entrega (una por mes y por hijo)",
+     null
+    ],
+    [
+     "NroEntrega",
+     "TINYINT",
+     "",
+     false,
+     "1 a 12 (UNIQUE con CIHijo)",
+     null
+    ]
+   ]
+  },
+  "FINIQUITO": {
+   "desc": "Liquidación de un contrato concluido (patrón Strategy según el tipo de retiro del contrato).",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "NroCon",
+     "INT",
+     "FK",
+     false,
+     "Contrato liquidado (UNIQUE)",
+     "CONTRATO.Nro"
+    ],
+    [
+     "FechaCalc",
+     "DATE",
+     "",
+     false,
+     "Fecha de cálculo",
+     null
+    ],
+    [
+     "Total",
+     "DECIMAL(10,2)",
+     "",
+     false,
+     "Monto total del finiquito",
+     null
+    ],
+    [
+     "FechaLimPago",
+     "DATE",
+     "",
+     false,
+     "CONTRATO.FechaRetiro + plazo de pago (parámetro PLAZO_FINIQ)",
+     null
+    ],
+    [
+     "Estado",
+     "VARCHAR(10)",
+     "",
+     false,
+     "CALCULADO / APROBADO / PAGADO (aprobado: no editable)",
+     null
+    ]
+   ]
+  },
+  "DETALLE FINIQUITO": {
+   "desc": "Conceptos del finiquito con su importe.",
+   "cols": [
+    [
+     "NroFin",
+     "INT",
+     "PK, FK",
+     false,
+     "Finiquito",
+     "FINIQUITO.Nro"
+    ],
+    [
+     "Concepto",
+     "VARCHAR(25)",
+     "PK",
+     false,
+     "INDEMNIZACION / DESAHUCIO / VACACIONES / AGUINALDO / DEVENGADOS / DESC. LICENCIAS",
+     null
+    ],
+    [
+     "Monto",
+     "DECIMAL(10,2)",
+     "",
+     false,
+     "Importe (negativo si es descuento)",
+     null
+    ]
+   ]
+  },
+  "EVALUACION": {
+   "desc": "Evaluación trimestral de desempeño (una por empleado y trimestre).",
+   "cols": [
+    [
+     "Nro",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "NroCon",
+     "INT",
+     "FK",
+     false,
+     "Contrato del trabajador evaluado",
+     "CONTRATO.Nro"
+    ],
+    [
+     "Trimestre",
+     "CHAR(7)",
+     "",
+     false,
+     "AAAA-T# (UNIQUE con NroCon)",
+     null
+    ],
+    [
+     "Fecha",
+     "DATE",
+     "",
+     false,
+     "Fecha de la evaluación",
+     null
+    ],
+    [
+     "Valor",
+     "TINYINT",
+     "",
+     false,
+     "1 a 5 (CHECK)",
+     null
+    ],
+    [
+     "Evaluador",
+     "VARCHAR(30)",
+     "FK",
+     false,
+     "Usuario que registró la evaluación",
+     "USUARIO.Login"
+    ],
+    [
+     "AccionProp",
+     "VARCHAR(30)",
+     "",
+     true,
+     "RETIRO / LLAMADA DE ATENCION / VALE (propuesta)",
+     null
+    ],
+    [
+     "Decision",
+     "VARCHAR(30)",
+     "",
+     true,
+     "Decisión final del responsable",
+     null
+    ]
+   ]
+  },
+  "ROL": {
+   "desc": "Roles de acceso con su nivel (uno por actor).",
+   "cols": [
+    [
+     "Id",
+     "INT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "Nombre",
+     "VARCHAR(40)",
+     "",
+     false,
+     "Afiliador, Encargado de Pagos, etc.",
+     null
+    ],
+    [
+     "Nivel",
+     "VARCHAR(15)",
+     "",
+     false,
+     "ADMINISTRADOR, OPERADOR o CONSULTA (RNF-07)",
+     null
+    ]
+   ]
+  },
+  "USUARIO": {
+   "desc": "Cuentas de acceso al sistema (un único rol por usuario).",
+   "cols": [
+    [
+     "Login",
+     "VARCHAR(30)",
+     "PK",
+     false,
+     "Nombre de usuario",
+     null
+    ],
+    [
+     "Clave",
+     "VARCHAR(60)",
+     "",
+     false,
+     "Contraseña cifrada con BCrypt",
+     null
+    ],
+    [
+     "IdRol",
+     "INT",
+     "FK",
+     false,
+     "Rol asignado",
+     "ROL.Id"
+    ],
+    [
+     "CIEmp",
+     "VARCHAR(15)",
+     "FK",
+     true,
+     "Empleado titular de la cuenta",
+     "EMPLEADO.CI"
+    ],
+    [
+     "Activo",
+     "BOOLEAN",
+     "",
+     false,
+     "Cuenta habilitada (baja lógica)",
+     null
+    ],
+    [
+     "Intentos",
+     "TINYINT",
+     "",
+     false,
+     "Intentos fallidos consecutivos (0 a 3)",
+     null
+    ],
+    [
+     "BloqHasta",
+     "DATETIME",
+     "",
+     true,
+     "Fin del bloqueo de 15 minutos",
+     null
+    ]
+   ]
+  },
+  "BITACORA": {
+   "desc": "Auditoría de operaciones, de solo lectura (RNF-09, RF-31).",
+   "cols": [
+    [
+     "Id",
+     "BIGINT",
+     "PK",
+     false,
+     "Identificador",
+     null
+    ],
+    [
+     "Login",
+     "VARCHAR(30)",
+     "FK",
+     true,
+     "Usuario que operó (nulo si el login ingresado no existe)",
+     "USUARIO.Login"
+    ],
+    [
+     "LoginIntento",
+     "VARCHAR(30)",
+     "",
+     true,
+     "Nombre de usuario ingresado en un intento fallido",
+     null
+    ],
+    [
+     "FechaHora",
+     "DATETIME",
+     "",
+     false,
+     "Momento de la operación",
+     null
+    ],
+    [
+     "Operacion",
+     "VARCHAR(20)",
+     "",
+     false,
+     "ALTA / BAJA / MODIFICACION / LOGIN FALLIDO / BLOQUEO",
+     null
+    ],
+    [
+     "Tabla",
+     "VARCHAR(40)",
+     "",
+     true,
+     "Tabla afectada",
+     null
+    ],
+    [
+     "ValorAnt",
+     "TEXT",
+     "",
+     true,
+     "Valor anterior (tablas críticas)",
+     null
+    ],
+    [
+     "ValorNuevo",
+     "TEXT",
+     "",
+     true,
+     "Valor nuevo (tablas críticas)",
+     null
+    ],
+    [
+     "IP",
+     "VARCHAR(45)",
+     "",
+     false,
+     "Dirección IP de origen",
+     null
+    ]
+   ]
+  }
+ },
+ "modules": [
+  {
+   "title": "Diseño relacional de la base de datos – Módulo Kardex",
+   "out": "mod_kardex",
+   "tables": [
+    "TIPO DOCUMENTO",
+    "DOCUMENTO",
+    "PERSONA",
+    "DEPENDIENTE",
+    "EMPLEADO",
+    "CONTRATO",
+    "CATEGORIA",
+    "AJUSTE SALARIAL",
+    "CONTRATO CARGO",
+    "CARGO",
+    "UBICACION",
+    "FUNCION"
+   ],
+   "refs": [
+    "GESTION SALARIAL"
+   ]
+  },
+  {
+   "title": "Diseño relacional de la base de datos – Módulos CPS y Planillas",
+   "out": "mod_cps_planillas",
+   "tables": [
+    "PARAMETRO",
+    "GESTION SALARIAL",
+    "PLANILLA",
+    "ANTICIPO",
+    "BOLETA PAGO",
+    "DETALLE BOLETA",
+    "MARCACION",
+    "FORMULARIO F110",
+    "AFILIACION CPS"
+   ],
+   "refs": [
+    "USUARIO",
+    "CONTRATO"
+   ]
+  },
+  {
+   "title": "Diseño relacional de la base de datos – Vacaciones, Lactancias, Finiquitos y Evaluaciones",
+   "out": "mod_vac_fin",
+   "tables": [
+    "SOLICITUD VACACION",
+    "EVALUACION",
+    "ENTREGA LACTANCIA",
+    "FINIQUITO",
+    "DETALLE FINIQUITO",
+    "FERIADO"
+   ],
+   "refs": [
+    "CONTRATO",
+    "USUARIO",
+    "DEPENDIENTE",
+    "UBICACION"
+   ]
+  },
+  {
+   "title": "Diseño relacional de la base de datos – Seguridad y auditoría",
+   "out": "mod_seguridad",
+   "tables": [
+    "ROL",
+    "USUARIO",
+    "BITACORA"
+   ],
+   "refs": [
+    "EMPLEADO"
+   ]
+  }
+ ]
+}

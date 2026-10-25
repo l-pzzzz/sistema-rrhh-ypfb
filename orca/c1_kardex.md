@@ -1,0 +1,17 @@
+# Prompt — C1 Kardex y Contratos (A12) · rama `c1/kardex` · responsable: Quina
+
+Lee `AGENTS.md` y `docs/`. Trabaja **solo** en `apps/kardex/`. Los modelos ya existen: no cambies campos ni crees migraciones de esquema.
+
+## Alcance
+- **CU-01 Gestionar Kardex** (RF-01, RF-04, RF-29): buscar empleado (CI, código o nombre, sin distinguir mayúsculas ni tildes); registrar; actualizar o corregir con motivo; adjuntar o reemplazar documentos (PDF/JPG/PNG hasta 5 MB, la versión anterior queda con `Vigente = False`).
+- **CU-02 Gestionar contrato** (RF-02, RF-03, RF-28): registrar contrato con uno o más cargos y categoría por antigüedad; un solo contrato VIGENTE por empleado; actualizar o corregir con motivo; registrar retiro (fecha, tipo, motivo) → contrato CONCLUIDO y empleado RETIRADO.
+  Emite `contrato_registrado` al registrar y `contrato_retirado` al registrar el retiro (`apps.core.senales`).
+- **CU-03 Gestionar dependientes** (RF-04, RF-05): registrar con fotocopia del CI obligatoria; actualizar o corregir; un dependiente con un solo trabajador (mensaje "Ya está registrado como dependiente de …"); advertencia si un hijo supera EDAD_MAX_HIJO.
+- Tarea programada de RF-03: recálculo diario de categoría y alerta al Afiliador.
+- Nivel OPERADOR con rol Afiliador; los demás operadores solo consultan.
+
+## Pruebas obligatorias
+CA-01 y CO-01 de `docs/07`, más los criterios de aceptación de RF-01 a RF-05, RF-28 y RF-29 de `docs/01`. Verifica que las señales se emiten (con un receptor de prueba).
+
+## Entrega
+PR hacia `main` con: CU y RF implementados, pantallas creadas, pruebas y dudas para el equipo.
