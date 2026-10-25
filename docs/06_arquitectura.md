@@ -55,3 +55,5 @@ contrato_retirado = Signal()     # kwargs: contrato (con FechaRetiro, TipoRetiro
 
 ## Despliegue
 Docker Compose: `nginx` (HTTPS), `web` (Gunicorn + Django), `worker` y `beat` (Celery), `redis`, y MySQL 8 en su propio servidor (en desarrollo, un contenedor `db`).
+
+Secretos en producción (`SECRET_KEY`, `DB_PASSWORD`, `DB_ROOT_PASSWORD` y `REDIS_PASSWORD`): van en el archivo `.env` del servidor, fuera del repositorio y con permisos solo para el usuario que ejecuta Docker (`chmod 600 .env`). El sistema es académico y no usa un gestor de secretos. En producción se usa solo `docker-compose.yml` (`docker compose -f docker-compose.yml up -d`): MySQL y Redis no se publican fuera de la red de Docker; `docker-compose.override.yml` es solo para desarrollo.

@@ -1,0 +1,12 @@
+# Solo desarrollo: docker compose lo carga automáticamente junto con docker-compose.yml.
+# Publica MySQL y Redis únicamente en 127.0.0.1 para correr pytest y manage.py desde el equipo.
+# En producción y en las pruebas aisladas (-f docker-compose.yml) no se usa: db y redis quedan
+# solo en la red interna de Docker (AGENTS.md §7).
+services:
+  db:
+    ports:
+      - "127.0.0.1:3306:3306"
+
+  redis:
+    ports:
+      - "127.0.0.1:6379:6379"

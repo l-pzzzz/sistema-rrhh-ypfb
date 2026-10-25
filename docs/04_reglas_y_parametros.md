@@ -26,7 +26,7 @@ El valor del caso es el valor inicial; el sistema calcula con el valor vigente c
 | EDAD_MAX_HIJO | Edad máxima de hijo beneficiario (advertencia) | 25 | Propuesta del equipo; a confirmar con la CPS. |
 | DIAS_LAB | Días laborables por semana | 5 | Lunes a viernes; ajustable según el régimen de cada área. |
 | VALOR_LACT | Valor de referencia de la entrega mensual de lactancia, en múltiplos del SMN | 1 (= 1 SMN) | Subsidio de lactancia en especie durante 12 meses. |
-| PLAZO_FINIQ | Plazo de pago del finiquito en días | 15 | Normativa laboral; a confirmar si son días hábiles o calendario. |
+| PLAZO_FINIQ | Plazo de pago del finiquito en días calendario (no hábiles) | 15 | Normativa laboral. Se cuenta en días calendario desde CONTRATO.FechaRetiro (decisión del equipo, revisión del PR #1). |
 | ANTIG_MIN_INDEM | Días de trabajo continuo para tener derecho a la indemnización | 90 | DS 110, Art. 2: más de 90 días de trabajo continuo. |
 
 ## Rango válido de cada parámetro (validación del CU-13, RF-22)
@@ -42,5 +42,5 @@ El valor del caso es el valor inicial; el sistema calcula con el valor vigente c
 | EDAD_MAX_HIJO | años | entero mayor a 0 |
 | DIAS_LAB | días por semana | entero de 1 a 7 |
 | VALOR_LACT | múltiplos del SMN | mayor a 0 |
-| PLAZO_FINIQ | días | entero mayor a 0 |
+| PLAZO_FINIQ | días calendario | entero mayor a 0 |
 | ANTIG_MIN_INDEM | días de trabajo continuo | entero mayor a 0 |

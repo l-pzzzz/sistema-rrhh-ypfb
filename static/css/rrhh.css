@@ -1,0 +1,4 @@
+/* Estilos propios del sistema (RNF-01: desde 1366x768). */
+#alertas:empty {
+  display: none;
+}
