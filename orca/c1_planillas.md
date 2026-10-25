@@ -16,3 +16,13 @@ PL-01, PL-02, PL-03, AN-01 y AN-02 de `docs/07` **con los valores exactos** (por
 
 ## Entrega
 PR hacia `main` con CU/RF, pruebas y dudas.
+
+## Reglas comunes de esta iteración
+- Antes de empezar: `git pull --rebase origin main`. Lee `AGENTS.md`, `docs/` completo y este archivo.
+- Usa los servicios de la base: `from apps.core.parametros import parametros`, `CalendarioLaboral` / funciones de `apps.core.calendario`, `apps.core.auditoria.registrar(...)` (con motivo en ACTUALIZACION y CORRECCION), `@requiere_nivel(...)` de `apps.core.permisos` y las fábricas de `apps/core/tests/fabricas.py`.
+- Las clases de los patrones usan los nombres de `docs/06` (iguales a los diagramas del informe).
+- Expón la URL `<app>:inicio`, que el menú de la plantilla base ya enlaza.
+- Pruebas aisladas de los otros agentes (no uses los puertos publicados):
+  `docker compose -p rrhh-<app> -f docker-compose.yml run --rm web pytest`
+- Primero muéstrame tu plan (pantallas, servicios, pruebas y filas de `docs/09` que vas a completar) y espera mi aprobación.
+- Al terminar: actualiza tus filas de `docs/09_trazabilidad_codigo.md`, verifica la definición de terminado de `AGENTS.md` §8 y abre el PR hacia `main`.
