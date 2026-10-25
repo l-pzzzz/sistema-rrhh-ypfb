@@ -26,12 +26,15 @@ python -c "import secrets; print(secrets.token_urlsafe(50))"   # pegar en SECRET
 # 2. Levantar MySQL, Redis, web, Celery y nginx (migra la base automáticamente)
 docker compose -p rrhh-demo up -d --build
 
-# 3. Cargar los datos de demostración: las contraseñas se muestran UNA sola vez en esta consola
+# 3. Esperar a que terminen las migraciones (la primera vez tardan un minuto; el comando espera y es seguro repetirlo)
+docker compose -p rrhh-demo exec web python manage.py migrate
+
+# 4. Cargar los datos de demostración: las contraseñas se muestran UNA sola vez en esta consola
 docker compose -p rrhh-demo exec web python manage.py cargar_datos_demo
 
-# 4. Abrir https://localhost:8443 (certificado autofirmado: aceptar la advertencia del navegador)
+# 5. Abrir https://localhost:8443 (certificado autofirmado: aceptar la advertencia del navegador)
 
-# 5. Al terminar, apagar y borrar la base de la demo
+# 6. Al terminar, apagar y borrar la base de la demo
 docker compose -p rrhh-demo down -v
 ```
 
