@@ -53,6 +53,17 @@ contrato_retirado = Signal()     # kwargs: contrato (con FechaRetiro, TipoRetiro
 | Alertar entregas de lactancia pendientes | diario; alerta cuando faltan 3 días para fin de mes | RF-19 |
 | Respaldo mysqldump + SHA-256 + SFTP + correo | según horario del Administrador (por defecto 23:00) | RF-25 |
 
+## Programación de las tareas (Celery Beat)
+Cada app declara sus tareas en `apps/<app>/tasks.py` y un diccionario `PROGRAMACION` con su horario. Los agentes de módulo **no** tocan `config/`: el integrador une esos diccionarios en `CELERY_BEAT_SCHEDULE` durante la integración (A15 y A19).
+
+## Alertas a los operadores
+Según el diagrama de despliegue (3.10.1, Servidor de Correo), las alertas de plazos de la CPS y de lactancia se muestran en la bandeja de cada módulo **y** se envían por correo (SMTP, `django.core.mail`) a los usuarios activos del rol que corresponde. El resumen del respaldo va al Administrador. No hay tabla de notificaciones: el historial de cada alerta queda en BITACORA cuando cambia un dato.
+
+## Decisiones de la iteración C1
+- Kardex: la antigüedad se cuenta desde EMPLEADO.FechaIngreso; un contrato nuevo de un empleado RETIRADO lo vuelve ACTIVO (reingreso); el tipo de documento "CI" se carga con una migración de datos de kardex.
+- CPS: la ubicación para feriados departamentales es la del primer cargo del contrato; si un contrato se retira con la afiliación PENDIENTE (nunca se afilió), la afiliación queda PENDIENTE y sale de la bandeja de altas, con una nota en el historial.
+- Planillas: la preplanilla se calcula al vuelo y no crea boletas (RF-16: las boletas solo se generan al cerrar). Los "otros ingresos" que el Encargado ingresa por trabajador se guardan como borrador en la caché (Redis), por planilla, hasta el cierre; al cerrar quedan en DETALLE BOLETA (concepto OTROS INGRESOS). El archivo de marcaciones tiene las columnas CI y DiasTrab; un contrato vigente sin marcación es una inconsistencia.
+
 ## Despliegue
 Docker Compose: `nginx` (HTTPS), `web` (Gunicorn + Django), `worker` y `beat` (Celery), `redis`, y MySQL 8 en su propio servidor (en desarrollo, un contenedor `db`).
 
