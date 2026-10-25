@@ -1,6 +1,6 @@
 # Prompt — Fase base (A11) · rama `base` · un solo agente
 
-Lee `AGENTS.md` y todos los archivos de `docs/`. Tu tarea es crear la **base del sistema** sobre la que trabajarán después seis agentes en paralelo. No programes pantallas de negocio todavía.
+Lee `AGENTS.md` y los archivos de `docs/` que necesites (AGENTS.md §10). Tu tarea es crear la **base del sistema** sobre la que trabajarán después seis agentes en paralelo. No programes pantallas de negocio todavía.
 
 ## Entregables
 1. Proyecto Django 5.2 en `config/` y las apps de `AGENTS.md` §3 dentro de `apps/`, registradas en `INSTALLED_APPS`.
