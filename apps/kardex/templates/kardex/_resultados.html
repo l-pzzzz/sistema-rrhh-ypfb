@@ -1,0 +1,35 @@
+{% comment %}Lista resumida de la búsqueda: CI, nombre, cargo y estado (RF-29, regla 2).{% endcomment %}
+<div class="table-responsive">
+  <table class="table table-sm table-hover align-middle">
+    <thead>
+      <tr><th>CI</th><th>Código</th><th>Nombre</th><th>Cargo</th><th>Categoría</th><th>Estado</th></tr>
+    </thead>
+    <tbody>
+      {% for empleado in pagina %}
+      <tr>
+        <td><a href="{% url 'kardex:ficha' empleado.ci %}">{{ empleado.ci }}</a></td>
+        <td>{{ empleado.codigo }}</td>
+        <td>{{ empleado.apellidos }}, {{ empleado.nombres }}</td>
+        <td>{{ empleado.cargos|join:", "|default:"—" }}</td>
+        <td>{{ empleado.categoria|default:"—" }}</td>
+        <td><span class="badge {% if empleado.estado == 'ACTIVO' %}text-bg-success{% else %}text-bg-secondary{% endif %}">{{ empleado.estado }}</span></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-muted">No se encontraron empleados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if pagina.has_other_pages %}
+<nav aria-label="Páginas">
+  <ul class="pagination pagination-sm">
+    {% if pagina.has_previous %}
+    <li class="page-item"><a class="page-link" href="?{{ consulta }}&pagina={{ pagina.previous_page_number }}">Anterior</a></li>
+    {% endif %}
+    <li class="page-item disabled"><span class="page-link">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span></li>
+    {% if pagina.has_next %}
+    <li class="page-item"><a class="page-link" href="?{{ consulta }}&pagina={{ pagina.next_page_number }}">Siguiente</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

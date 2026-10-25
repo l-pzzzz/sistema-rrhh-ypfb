@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% comment %}CU-01 Ficha del empleado: Kardex (RF-01), contratos (RF-02, RF-28), dependientes (RF-05) y documentos (RF-04).{% endcomment %}
+{% block titulo %}{{ empleado.apellidos }}, {{ empleado.nombres }}{% endblock %}
+{% block contenido %}
+<nav aria-label="Ruta">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'kardex:inicio' %}">Kardex</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ empleado.apellidos }}, {{ empleado.nombres }}</li>
+  </ol>
+</nav>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h4 mb-0">{{ empleado.apellidos }}, {{ empleado.nombres }}
+    <span class="badge {% if empleado.estado == 'ACTIVO' %}text-bg-success{% else %}text-bg-secondary{% endif %}">{{ empleado.estado }}</span>
+  </h1>
+  {% if puede_escribir %}
+  <div class="d-flex flex-wrap gap-2">
+    <a href="{% url 'kardex:empleado_editar' empleado.ci %}" class="btn btn-outline-primary btn-sm">Actualizar o corregir datos</a>
+    <a href="{% url 'kardex:documento_adjuntar' empleado.ci %}" class="btn btn-outline-primary btn-sm">Adjuntar documento</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="card mb-3">
+  <div class="card-header">Datos del empleado</div>
+  <div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">CI</dt><dd class="col-sm-3">{{ empleado.ci }}</dd>
+      <dt class="col-sm-3">Código</dt><dd class="col-sm-3">{{ empleado.codigo }}</dd>
+      <dt class="col-sm-3">Fecha de nacimiento</dt><dd class="col-sm-3">{{ empleado.fecha_nac|date:"d/m/Y" }}</dd>
+      <dt class="col-sm-3">Sexo</dt><dd class="col-sm-3">{{ empleado.get_sexo_display }}</dd>
+      <dt class="col-sm-3">Fecha de ingreso</dt><dd class="col-sm-3">{{ empleado.fecha_ingreso|date:"d/m/Y" }}</dd>
+      <dt class="col-sm-3">Teléfono</dt><dd class="col-sm-3">{{ empleado.telefono|default:"—" }}</dd>
+      <dt class="col-sm-3">Dirección</dt><dd class="col-sm-9">{{ empleado.direccion|default:"—" }}</dd>
+      <dt class="col-sm-3">Contacto de emergencia</dt>
+      <dd class="col-sm-9">{{ empleado.nom_emerg|default:"—" }}{% if empleado.par_emerg %} ({{ empleado.par_emerg }}){% endif %}{% if empleado.tel_emerg %} · {{ empleado.tel_emerg }}{% endif %}</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Contratos</span>
+    {% if puede_escribir and not vigente %}
+    <a href="{% url 'kardex:contrato_nuevo' empleado.ci %}" class="btn btn-primary btn-sm">Nuevo contrato</a>
+    {% endif %}
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm mb-0 align-middle">
+      <thead><tr><th>N°</th><th>Inicio</th><th>Fin</th><th>Categoría</th><th>Cargos (departamento)</th><th>Estado</th><th>Retiro</th><th></th></tr></thead>
+      <tbody>
+        {% for contrato in contratos %}
+        <tr>
+          <td>{{ contrato.nro }}</td>
+          <td>{{ contrato.fecha_inicio|date:"d/m/Y" }}</td>
+          <td>{{ contrato.fecha_fin|date:"d/m/Y"|default:"Indefinido" }}</td>
+          <td>{{ contrato.categoria_id }}</td>
+          <td>{% for cargo in contrato.cargos.all %}{{ cargo.nombre }} ({{ cargo.ubicacion.departamento }}){% if not forloop.last %}, {% endif %}{% endfor %}</td>
+          <td>{{ contrato.estado }}</td>
+          <td>{% if contrato.fecha_retiro %}{{ contrato.fecha_retiro|date:"d/m/Y" }} · {{ contrato.get_tipo_retiro_display }}<br><small class="text-muted">{{ contrato.motivo_retiro }}</small>{% else %}—{% endif %}</td>
+          <td class="text-end">
+            {% if puede_escribir and contrato.estado == 'VIGENTE' %}
+            <a href="{% url 'kardex:contrato_editar' contrato.nro %}" class="btn btn-outline-primary btn-sm">Actualizar o corregir</a>
+            <a href="{% url 'kardex:contrato_retiro' contrato.nro %}" class="btn btn-outline-danger btn-sm">Registrar retiro</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-muted">Sin contratos registrados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Dependientes</span>
+    {% if puede_escribir %}
+    <a href="{% url 'kardex:dependiente_nuevo' empleado.ci %}" class="btn btn-primary btn-sm">Nuevo dependiente</a>
+    {% endif %}
+  </div>
+  {% if puede_escribir %}{% for aviso in aviso_cps %}<div class="alert alert-warning m-2 mb-0 py-2">{{ aviso }}</div>{% endfor %}{% endif %}
+  <div class="table-responsive">
+    <table class="table table-sm mb-0 align-middle">
+      <thead><tr><th>CI</th><th>Nombre</th><th>Parentesco</th><th>Fecha de nacimiento</th><th></th></tr></thead>
+      <tbody>
+        {% for dependiente, avisos in dependientes %}
+        <tr>
+          <td>{{ dependiente.ci }}</td>
+          <td>{{ dependiente.apellidos }}, {{ dependiente.nombres }}
+            {% for aviso in avisos %}<div class="small text-warning-emphasis">{{ aviso }}</div>{% endfor %}</td>
+          <td>{{ dependiente.get_parentesco_display }}</td>
+          <td>{{ dependiente.fecha_nac|date:"d/m/Y" }}</td>
+          <td class="text-end">
+            {% if puede_escribir %}
+            <a href="{% url 'kardex:dependiente_editar' dependiente.ci %}" class="btn btn-outline-primary btn-sm">Actualizar o corregir</a>
+            <a href="{% url 'kardex:documento_adjuntar' dependiente.ci %}" class="btn btn-outline-primary btn-sm">Adjuntar documento</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-muted">Sin dependientes registrados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header">Documentos</div>
+  <div class="table-responsive">
+    <table class="table table-sm mb-0 align-middle">
+      <thead><tr><th>Persona</th><th>Tipo</th><th>Emisión</th><th>Carga</th><th>Estado</th><th></th></tr></thead>
+      <tbody>
+        {% for documento in documentos %}
+        <tr class="{% if not documento.vigente %}text-muted{% endif %}">
+          <td>{{ documento.persona.nombres }} {{ documento.persona.apellidos }}</td>
+          <td>{{ documento.tipo }}</td>
+          <td>{{ documento.fecha_emision|date:"d/m/Y"|default:"—" }}</td>
+          <td>{{ documento.fecha_carga|date:"d/m/Y H:i" }}</td>
+          <td>{% if documento.vigente %}Vigente{% else %}Reemplazado{% endif %}</td>
+          <td class="text-end">
+            <a href="{% url 'kardex:documento_ver' documento.nro %}" class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener">Ver</a>
+            {% if puede_escribir and documento.vigente %}
+            <a href="{% url 'kardex:documento_reemplazar' documento.nro %}" class="btn btn-outline-primary btn-sm">Reemplazar</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-muted">Sin documentos.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

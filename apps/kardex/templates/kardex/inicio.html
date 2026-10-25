@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% comment %}CU-01.1 Buscar empleado (RF-29) y alertas de cambio de categoría (RF-03).{% endcomment %}
+{% block titulo %}Kardex y Contratos{% endblock %}
+{% block contenido %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">Kardex y Contratos</h1>
+  {% if puede_escribir %}
+  <a href="{% url 'kardex:empleado_nuevo' %}" class="btn btn-primary">Nuevo empleado</a>
+  {% endif %}
+</div>
+
+{% if alertas %}
+<div class="card border-warning mb-3">
+  <div class="card-header bg-warning-subtle">Alertas de cambio de categoría</div>
+  <ul class="list-group list-group-flush">
+    {% for alerta in alertas %}
+    <li class="list-group-item d-flex justify-content-between">
+      <span><strong>{{ alerta.mensaje }}</strong> · <a href="{% url 'kardex:ficha' alerta.ci %}">{{ alerta.nombre }}</a>
+        (contrato {{ alerta.contrato }})</span>
+      <small class="text-muted">{{ alerta.fecha|date:"d/m/Y" }}</small>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<form method="get" class="row g-2 mb-3" hx-get="{% url 'kardex:inicio' %}" hx-target="#resultados"
+      hx-trigger="input changed delay:300ms from:#id_q, change from:select, submit" hx-push-url="true">
+  <div class="col-12 col-lg-4">
+    <label class="visually-hidden" for="{{ form.q.id_for_label }}">{{ form.q.label }}</label>
+    <input type="search" name="q" id="{{ form.q.id_for_label }}" class="form-control"
+           placeholder="Buscar por CI, código o nombre" value="{{ form.q.value|default:'' }}" autofocus>
+  </div>
+  <div class="col-6 col-lg-2">{{ form.departamento }}</div>
+  <div class="col-6 col-lg-2">{{ form.categoria }}</div>
+  <div class="col-6 col-lg-2">{{ form.estado }}</div>
+  <div class="col-6 col-lg-2"><button type="submit" class="btn btn-outline-primary w-100">Buscar</button></div>
+</form>
+
+<div id="resultados">{% include "kardex/_resultados.html" %}</div>
+{% endblock %}
