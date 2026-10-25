@@ -8,9 +8,11 @@ Fuente: Informe final, puntos 3.6.1 y 3.7. El diagrama de clases y el diseño re
 - Nombre de columna: el del informe exacto, con `db_column` (por ejemplo `fecha_ingreso = models.DateField(db_column="FechaIngreso")`). En Python los campos van en snake_case (PEP 8).
 - Clave primaria compuesta (DETALLE BOLETA, DETALLE FINIQUITO, CONTRATO CARGO, PARAMETRO): `models.CompositePrimaryKey` (Django 5.2).
 - Herencia PERSONA → EMPLEADO / DEPENDIENTE: herencia multitabla con `OneToOneField(Persona, parent_link=True, primary_key=True, db_column="CI")`.
-- `USUARIO` es el modelo de usuario del sistema (`AUTH_USER_MODEL = "administracion.Usuario"`), con `Login` como nombre de usuario.
-- Restricciones UNIQUE y CHECK indicadas en la descripción de cada columna → `Meta.constraints`.
+- `USUARIO` es el modelo de usuario del sistema (`AUTH_USER_MODEL = "administracion.Usuario"`), con `Login` como nombre de usuario. `Clave` guarda el hash BCrypt puro (`$2b$…`, 60 caracteres).
+- Restricciones UNIQUE y CHECK indicadas en la descripción de cada columna (incluidos los rangos) → `Meta.constraints`. Las que MySQL no admite (UNIQUE condicional: un solo contrato VIGENTE por empleado; feriado nacional único) se validan en el servicio y tienen su prueba.
+- BITACORA.Operacion: ALTA, ACTUALIZACION, CORRECCION, BAJA, LOGIN FALLIDO, BLOQUEO, ACCESO DENEGADO; `Motivo` es obligatorio en ACTUALIZACION y CORRECCION.
 - Nada se elimina físicamente (`on_delete=PROTECT`), salvo los detalles de una composición (`CASCADE`).
+- Las tablas propias de Django (auth, sessions, contenttypes, migrations) no son tablas de negocio y no cuentan entre las 30. No se instala `django.contrib.admin`.
 
 ## Tabla → app de Django → clase
 
@@ -215,8 +217,8 @@ Parámetros legales y de negocio por gestión, en formato clave-valor (patrón S
 | Columna | Tipo | Clave | Nulo | Descripción |
 |---|---|---|---|---|
 | Año | SMALLINT | PK, FK | No | Gestión a la que aplica → GESTION SALARIAL.Año |
-| Clave | VARCHAR(20) | PK | No | SMN, PORC_AFP, UMBRAL_AFP, PORC_IVA, PLAZO_AFIL, PLAZO_BAJA, EDAD_MAX_HIJO, DIAS_LAB, VALOR_LACT, PLAZO_FINIQ |
-| Valor | DECIMAL(12,2) | — | No | Valor del parámetro (porcentajes entre 0 y 100; plazos > 0) |
+| Clave | VARCHAR(20) | PK | No | SMN, PORC_AFP, UMBRAL_AFP, PORC_IVA, PLAZO_AFIL, PLAZO_BAJA, EDAD_MAX_HIJO, DIAS_LAB, VALOR_LACT, PLAZO_FINIQ, ANTIG_MIN_INDEM |
+| Valor | DECIMAL(12,2) | — | No | Valor del parámetro (porcentajes entre 0 y 100; plazos > 0; VALOR_LACT en múltiplos del SMN) |
 | Fuente | VARCHAR(80) | — | Sí | Origen del valor (caso de estudio o norma) |
 
 ## FERIADO  (`administracion.Feriado`)
@@ -390,7 +392,7 @@ Cuentas de acceso al sistema (un único rol por usuario).
 | Columna | Tipo | Clave | Nulo | Descripción |
 |---|---|---|---|---|
 | Login | VARCHAR(30) | PK | No | Nombre de usuario |
-| Clave | VARCHAR(60) | — | No | Contraseña cifrada con BCrypt |
+| Clave | VARCHAR(60) | — | No | Contraseña cifrada con BCrypt (hash $2b$ de 60 caracteres) |
 | IdRol | INT | FK | No | Rol asignado → ROL.Id |
 | CIEmp | VARCHAR(15) | FK | Sí | Empleado titular de la cuenta → EMPLEADO.CI |
 | Activo | BOOLEAN | — | No | Cuenta habilitada (baja lógica) |
@@ -407,8 +409,9 @@ Auditoría de operaciones, de solo lectura (RNF-09, RF-31).
 | Login | VARCHAR(30) | FK | Sí | Usuario que operó (nulo si el login ingresado no existe) → USUARIO.Login |
 | LoginIntento | VARCHAR(30) | — | Sí | Nombre de usuario ingresado en un intento fallido |
 | FechaHora | DATETIME | — | No | Momento de la operación |
-| Operacion | VARCHAR(20) | — | No | ALTA / BAJA / MODIFICACION / LOGIN FALLIDO / BLOQUEO |
+| Operacion | VARCHAR(20) | — | No | ALTA / ACTUALIZACION / CORRECCION / BAJA / LOGIN FALLIDO / BLOQUEO / ACCESO DENEGADO |
 | Tabla | VARCHAR(40) | — | Sí | Tabla afectada |
 | ValorAnt | TEXT | — | Sí | Valor anterior (tablas críticas) |
 | ValorNuevo | TEXT | — | Sí | Valor nuevo (tablas críticas) |
+| Motivo | VARCHAR(200) | — | Sí | Motivo de la actualización o corrección (obligatorio en esas operaciones) |
 | IP | VARCHAR(45) | — | No | Dirección IP de origen |

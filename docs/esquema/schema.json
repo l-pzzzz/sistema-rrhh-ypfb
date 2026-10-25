@@ -590,7 +590,7 @@
      "VARCHAR(20)",
      "PK",
      false,
-     "SMN, PORC_AFP, UMBRAL_AFP, PORC_IVA, PLAZO_AFIL, PLAZO_BAJA, EDAD_MAX_HIJO, DIAS_LAB, VALOR_LACT, PLAZO_FINIQ",
+     "SMN, PORC_AFP, UMBRAL_AFP, PORC_IVA, PLAZO_AFIL, PLAZO_BAJA, EDAD_MAX_HIJO, DIAS_LAB, VALOR_LACT, PLAZO_FINIQ, ANTIG_MIN_INDEM",
      null
     ],
     [
@@ -598,7 +598,7 @@
      "DECIMAL(12,2)",
      "",
      false,
-     "Valor del parámetro (porcentajes entre 0 y 100; plazos > 0)",
+     "Valor del parámetro (porcentajes entre 0 y 100; plazos > 0; VALOR_LACT en múltiplos del SMN)",
      null
     ],
     [
@@ -1276,7 +1276,7 @@
      "VARCHAR(60)",
      "",
      false,
-     "Contraseña cifrada con BCrypt",
+     "Contraseña cifrada con BCrypt (hash $2b$ de 60 caracteres)",
      null
     ],
     [
@@ -1361,7 +1361,7 @@
      "VARCHAR(20)",
      "",
      false,
-     "ALTA / BAJA / MODIFICACION / LOGIN FALLIDO / BLOQUEO",
+     "ALTA / ACTUALIZACION / CORRECCION / BAJA / LOGIN FALLIDO / BLOQUEO / ACCESO DENEGADO",
      null
     ],
     [
@@ -1386,6 +1386,14 @@
      "",
      true,
      "Valor nuevo (tablas críticas)",
+     null
+    ],
+    [
+     "Motivo",
+     "VARCHAR(200)",
+     "",
+     true,
+     "Motivo de la actualización o corrección (obligatorio en esas operaciones)",
      null
     ],
     [

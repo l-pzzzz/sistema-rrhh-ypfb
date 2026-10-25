@@ -36,10 +36,12 @@ templates/  static/  docs/  orca/
 - **CONTRATO es el eje:** afiliación, boletas, anticipos, F110, marcaciones, vacaciones, evaluaciones, lactancias y finiquitos se relacionan con el contrato, no con el empleado.
 - Solo el agente de la fase base crea modelos y migraciones. Un agente de módulo **no cambia campos ni crea migraciones de esquema**; si necesita un cambio, lo pide en el PR.
 - No se usan librerías que creen tablas extra del negocio (ni django-simple-history ni django-axes): la bitácora va en `BITACORA` y el bloqueo usa `USUARIO.Intentos` y `USUARIO.BloqHasta`.
+- `USUARIO.Clave` guarda el hash BCrypt puro (`$2b$…`, 60 caracteres) mediante `set_password`/`check_password` propios del modelo (RNF-06).
+- Las restricciones que MySQL no admite (un solo contrato VIGENTE por empleado; feriado nacional único) se validan en el servicio de su app y tienen prueba.
 
 ## 5. Reglas de negocio
 - Nada se elimina: se usan estados (RETIRADO, CONCLUIDO, DESAFILIADO, usuario inactivo). `on_delete=PROTECT` salvo detalles de composición.
-- Actualizar (cambio real) y corregir (error de registro) exigen **motivo** y quedan en BITACORA con valor anterior y nuevo.
+- Actualizar (cambio real) y corregir (error de registro) exigen **motivo** y quedan en BITACORA con `Operacion` = ACTUALIZACION o CORRECCION, `Motivo`, valor anterior y nuevo. Un acceso denegado se registra como ACCESO DENEGADO.
 - Los valores legales (SMN, AFP, RC-IVA, plazos) se leen **siempre** de `PARAMETRO` mediante `apps.core.parametros`. Prohibido escribir 1656, 12.21, 3300, etc. en el código.
 - Importes con `Decimal` y redondeo `ROUND_HALF_UP` a 2 decimales. Nunca `float` para dinero.
 - Días hábiles siempre con `apps.core.calendario` (fines de semana y FERIADO).

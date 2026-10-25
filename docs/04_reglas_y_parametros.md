@@ -13,7 +13,7 @@
 
 ## Parámetros de la gestión (tabla PARAMETRO, clave-valor por año)
 
-El valor del caso es el valor inicial; el sistema calcula con el valor vigente con solo cambiar el parámetro. **Nunca escribir estos valores en el código.**
+El valor del caso es el valor inicial; el sistema calcula con el valor vigente con solo cambiar el parámetro. **Nunca escribir estos valores en el código.** Son 11 claves; VALOR_LACT se guarda en múltiplos del SMN (1 = 1 SMN de la gestión).
 
 | Clave | Descripción | Valor inicial | Origen y referencia vigente |
 |---|---|---|---|
@@ -25,7 +25,6 @@ El valor del caso es el valor inicial; el sistema calcula con el valor vigente c
 | PLAZO_BAJA | Plazo del aviso de baja en días hábiles | 5 | DL 13214, Art. 8 (el caso solo indica "cuanto antes"). |
 | EDAD_MAX_HIJO | Edad máxima de hijo beneficiario (advertencia) | 25 | Propuesta del equipo; a confirmar con la CPS. |
 | DIAS_LAB | Días laborables por semana | 5 | Lunes a viernes; ajustable según el régimen de cada área. |
-| VALOR_LACT | Valor de referencia de la entrega mensual de lactancia | 1 SMN | Subsidio de lactancia en especie durante 12 meses. |
+| VALOR_LACT | Valor de referencia de la entrega mensual de lactancia, en múltiplos del SMN | 1 (= 1 SMN) | Subsidio de lactancia en especie durante 12 meses. |
 | PLAZO_FINIQ | Plazo de pago del finiquito en días | 15 | Normativa laboral; a confirmar si son días hábiles o calendario. |
 | ANTIG_MIN_INDEM | Días de trabajo continuo para tener derecho a la indemnización | 90 | DS 110, Art. 2: más de 90 días de trabajo continuo. |
-| SMN | Salario Mínimo Nacional. | Bs 1.656 en el caso; Bs 3.300 desde el 01/01/2026 (DS 5516). Define los umbrales de AFP y RC-IVA (parámetro SMN). |
