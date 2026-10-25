@@ -28,7 +28,7 @@ PARAMETROS = [
     ("EDAD_MAX_HIJO", "25.00", "Propuesta del equipo; a confirmar con la CPS."),
     ("DIAS_LAB", "5.00", "Lunes a viernes; ajustable según el régimen de cada área."),
     ("VALOR_LACT", "1.00", "Múltiplos del SMN (1 = 1 SMN). Subsidio en especie durante 12 meses."),
-    ("PLAZO_FINIQ", "15.00", "Normativa laboral; a confirmar si son días hábiles o calendario."),
+    ("PLAZO_FINIQ", "15.00", "Normativa laboral; se cuenta en días calendario."),
     ("ANTIG_MIN_INDEM", "90.00", "DS 110, Art. 2: más de 90 días de trabajo continuo."),
 ]
 

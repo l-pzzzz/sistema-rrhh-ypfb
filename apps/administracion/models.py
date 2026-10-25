@@ -38,7 +38,7 @@ class Parametro(models.Model):
         EDAD_MAX_HIJO = "EDAD_MAX_HIJO", "Edad máxima de hijo beneficiario"
         DIAS_LAB = "DIAS_LAB", "Días laborables por semana"
         VALOR_LACT = "VALOR_LACT", "Valor de la lactancia (múltiplos del SMN)"
-        PLAZO_FINIQ = "PLAZO_FINIQ", "Plazo de pago del finiquito (días)"
+        PLAZO_FINIQ = "PLAZO_FINIQ", "Plazo de pago del finiquito (días calendario)"
         ANTIG_MIN_INDEM = "ANTIG_MIN_INDEM", "Días continuos para la indemnización"
 
     pk = models.CompositePrimaryKey("gestion", "clave")

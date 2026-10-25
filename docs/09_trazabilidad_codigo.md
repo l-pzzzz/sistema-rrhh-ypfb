@@ -32,7 +32,7 @@ Cada PR actualiza las filas de los requisitos que implementa. El integrador no u
 | RF-24 | El sistema debe permitir migrar los datos del personal activo desde archivos Excel o CSV. | CU-14 | `administracion` | | | Pendiente |
 | RF-25 | El sistema debe permitir programar, verificar y restaurar los respaldos de la base de dato… | CU-14 | `administracion` | | | Pendiente |
 | RF-26 | El sistema debe generar reportes parametrizados exportables a PDF y Excel. | CU-15 | `reportes` | | | Pendiente |
-| RF-27 | El sistema debe autenticar a los usuarios mediante usuario y contraseña. | CU-16 | `administracion` | | | Pendiente |
+| RF-27 | El sistema debe autenticar a los usuarios mediante usuario y contraseña. | CU-16 | `administracion` | `apps/administracion/views.py` (`InicioSesionView`, `CierreSesionView`) / `apps/administracion/services.py` (`autenticar`), `forms.py` (`InicioSesionForm`), `backends.py`, `models.py` (`Usuario`: BCrypt, `Intentos`, `BloqHasta`), `templates/administracion/login.html` | `apps/administracion/tests/test_inicio_sesion.py` (bloqueo de 3 intentos por 15 minutos, cuenta inactiva, bitácora de LOGIN FALLIDO y BLOQUEO, sesión de 15 minutos) | Implementado |
 | RF-30 | El sistema debe permitir registrar los feriados de cada gestión para el cálculo de días há… | CU-13 | `administracion` | | | Pendiente |
 | RF-31 | El sistema debe permitir consultar la bitácora de auditoría. | CU-12 | `administracion` | | | Pendiente |
 
