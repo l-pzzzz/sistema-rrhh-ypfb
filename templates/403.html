@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block titulo %}Acceso denegado{% endblock %}
+{% block contenido %}
+<div class="alert alert-danger" role="alert">
+  <h1 class="h4">Acceso denegado</h1>
+  <p class="mb-0">Su nivel o rol no permite ingresar a esta opción. El intento quedó registrado en la bitácora.</p>
+</div>
+<a href="{% url 'inicio' %}" class="btn btn-secondary">Volver al inicio</a>
+{% endblock %}
