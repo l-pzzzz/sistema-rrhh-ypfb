@@ -362,7 +362,7 @@ Conceptos del finiquito con su importe.
 
 ## EVALUACION  (`finiquitos.Evaluacion`)
 
-Evaluación trimestral de desempeño (una por empleado y trimestre).
+Evaluación trimestral de desempeño (una por contrato y trimestre).
 
 | Columna | Tipo | Clave | Nulo | Descripción |
 |---|---|---|---|---|

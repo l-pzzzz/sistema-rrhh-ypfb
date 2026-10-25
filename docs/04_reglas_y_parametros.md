@@ -28,3 +28,19 @@ El valor del caso es el valor inicial; el sistema calcula con el valor vigente c
 | VALOR_LACT | Valor de referencia de la entrega mensual de lactancia, en múltiplos del SMN | 1 (= 1 SMN) | Subsidio de lactancia en especie durante 12 meses. |
 | PLAZO_FINIQ | Plazo de pago del finiquito en días | 15 | Normativa laboral; a confirmar si son días hábiles o calendario. |
 | ANTIG_MIN_INDEM | Días de trabajo continuo para tener derecho a la indemnización | 90 | DS 110, Art. 2: más de 90 días de trabajo continuo. |
+
+## Rango válido de cada parámetro (validación del CU-13, RF-22)
+
+| Clave | Unidad | Rango válido |
+|---|---|---|
+| SMN | bolivianos | mayor a 0 |
+| PORC_AFP | porcentaje | mayor a 0 y menor a 100 |
+| UMBRAL_AFP | múltiplos del SMN | 0 o mayor (0 = sin umbral) |
+| PORC_IVA | porcentaje | mayor a 0 y menor a 100 |
+| PLAZO_AFIL | días hábiles | entero mayor a 0 |
+| PLAZO_BAJA | días hábiles | entero mayor a 0 |
+| EDAD_MAX_HIJO | años | entero mayor a 0 |
+| DIAS_LAB | días por semana | entero de 1 a 7 |
+| VALOR_LACT | múltiplos del SMN | mayor a 0 |
+| PLAZO_FINIQ | días | entero mayor a 0 |
+| ANTIG_MIN_INDEM | días de trabajo continuo | entero mayor a 0 |

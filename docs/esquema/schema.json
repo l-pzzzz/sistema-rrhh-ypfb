@@ -1163,7 +1163,7 @@
    ]
   },
   "EVALUACION": {
-   "desc": "Evaluación trimestral de desempeño (una por empleado y trimestre).",
+   "desc": "Evaluación trimestral de desempeño (una por contrato y trimestre).",
    "cols": [
     [
      "Nro",

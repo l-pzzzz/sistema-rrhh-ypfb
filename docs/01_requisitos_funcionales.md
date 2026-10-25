@@ -85,10 +85,10 @@ Fuente: Informe final, punto 3.1 (31 requisitos). Cada requisito indica sus dato
 ### RF-06 — El sistema debe registrar la afiliación del trabajador a la CPS y generar el Aviso de Afiliación del Trabajador (parte de ingreso).
 
 - **Prioridad:** Alta · **Caso de uso:** CU-04
-- **Datos:** CI del empleado, número de matrícula CPS, fecha de afiliación, tipo de afiliación (NUEVO o REINGRESO).
+- **Datos:** Contrato del empleado (buscado por su CI), número de matrícula CPS, fecha de afiliación, tipo de afiliación (NUEVO o REINGRESO).
 - **Reglas:**
   - 1. El empleado debe tener un contrato vigente.
-  - 2. La matrícula CPS es única por empleado activo.
+  - 2. La matrícula CPS es única por contrato vigente.
   - 3. El PDF del aviso replica los campos del formulario oficial de la CPS.
   - 4. El tipo REINGRESO exige una desafiliación anterior registrada del mismo empleado.
 - **Criterio de aceptación:** Al afiliar a un empleado sin contrato vigente, el sistema rechaza el registro con el mensaje "El empleado no tiene un contrato vigente". Con contrato vigente, genera el aviso en PDF.
@@ -107,7 +107,7 @@ Fuente: Informe final, punto 3.1 (31 requisitos). Cada requisito indica sus dato
 ### RF-08 — El sistema debe alertar la desafiliación pendiente al registrarse el retiro del trabajador y registrar el Aviso de Baja.
 
 - **Prioridad:** Alta · **Caso de uso:** CU-04
-- **Datos:** CI del empleado, fecha de retiro (RF-28), fecha de presentación del aviso de baja, plazo de baja en días hábiles (RF-22).
+- **Datos:** Contrato del empleado (buscado por su CI), fecha de retiro (RF-28), fecha de presentación del aviso de baja, plazo de baja en días hábiles (RF-22).
 - **Reglas:**
   - 1. Al registrarse el retiro, el sistema genera una alerta para el Afiliador.
   - 2. El plazo para presentar el aviso de baja es de cinco días hábiles desde el fin de la relación laboral (DL 13214, Art. 8) y se maneja como parámetro.
@@ -118,7 +118,7 @@ Fuente: Informe final, punto 3.1 (31 requisitos). Cada requisito indica sus dato
 ### RF-09 — El sistema debe mantener el historial de afiliaciones y desafiliaciones de cada trabajador.
 
 - **Prioridad:** Media · **Caso de uso:** CU-04
-- **Datos:** CI del empleado.
+- **Datos:** Contrato del empleado (buscado por su CI).
 - **Reglas:**
   - 1. Se muestra en orden cronológico cada alta, baja y corrección, con su fecha y responsable.
   - 2. No se eliminan registros; toda corrección queda en la bitácora con el valor anterior y el nuevo (RF-31).
@@ -135,7 +135,7 @@ Fuente: Informe final, punto 3.1 (31 requisitos). Cada requisito indica sus dato
   - 1. Se valida la estructura del archivo antes de procesarlo.
   - 2. Los empleados no registrados o sin contrato vigente se listan como inconsistencias (CU-05.3).
   - 3. Los días trabajados deben estar entre 0 y 30.
-  - 4. Hay un solo registro por empleado y mes; reimportar reemplaza los datos solo si la planilla no está cerrada.
+  - 4. Hay un solo registro por contrato y mes; reimportar reemplaza los datos solo si la planilla no está cerrada.
   - 5. No hay conexión directa con equipos biométricos (fuera del alcance).
 - **Criterio de aceptación:** Al importar un archivo con un CI que no existe en el sistema, ese CI aparece en la lista de inconsistencias y el resto de los registros se importa.
 
@@ -176,17 +176,17 @@ Fuente: Informe final, punto 3.1 (31 requisitos). Cada requisito indica sus dato
 ### RF-14 — El sistema debe permitir registrar el formulario F110 presentado por el trabajador.
 
 - **Prioridad:** Alta · **Caso de uso:** CU-07
-- **Datos:** CI del empleado, mes declarado, monto total de las facturas, fecha de presentación.
+- **Datos:** Contrato del empleado (buscado por su CI), mes declarado, monto total de las facturas, fecha de presentación.
 - **Reglas:**
   - 1. El F110 presentado hasta el día 15 se aplica a la planilla del mes; el presentado después, a la del mes siguiente (caso).
-  - 2. Hay una sola presentación por empleado y mes.
+  - 2. Hay una sola presentación por contrato y mes.
   - 3. El crédito (13 %) lo calcula el sistema (RF-13); no se ingresa a mano.
 - **Criterio de aceptación:** Un F110 presentado el día 16 aparece aplicado en la planilla del mes siguiente.
 
 ### RF-15 — El sistema debe permitir registrar anticipos de sueldo.
 
 - **Prioridad:** Alta · **Caso de uso:** CU-06
-- **Datos:** CI del empleado, monto, fecha.
+- **Datos:** Contrato del empleado (buscado por su CI), monto, fecha.
 - **Reglas:**
   - 1. El anticipo solo se registra después del día 15 del mes (caso).
   - 2. La suma de los anticipos del mes no puede superar el 50 % del haber básico de la categoría (caso).
@@ -259,9 +259,9 @@ Fuente: Informe final, punto 3.1 (31 requisitos). Cada requisito indica sus dato
 ### RF-21 — El sistema debe registrar la evaluación trimestral de desempeño y proponer la acción que corresponde según el valor obtenido.
 
 - **Prioridad:** Media · **Caso de uso:** CU-11
-- **Datos:** CI del empleado, trimestre, fecha, valor (1 a 5), evaluador, observaciones, decisión final (instrucción escrita de la gerencia).
+- **Datos:** Contrato del empleado (buscado por su CI), trimestre, fecha, valor (1 a 5), evaluador, observaciones, decisión final (instrucción escrita de la gerencia).
 - **Reglas:**
-  - 1. Hay una evaluación por empleado y trimestre.
+  - 1. Hay una evaluación por contrato y trimestre; un reingreso inicia un contrato nuevo con su propia primera evaluación.
   - 2. Acción propuesta (caso): 1 o 2 en la primera evaluación, retiro; 3, llamada de atención escrita; 4 o 5, vale de Bs 1.000 para la canasta familiar.
   - 3. La acción es una propuesta: el Afiliador registra la decisión final según la instrucción escrita de la gerencia; el sistema no retira al empleado automáticamente.
   - 4. Las evaluaciones no se borran; toda corrección queda en la bitácora (RF-31).

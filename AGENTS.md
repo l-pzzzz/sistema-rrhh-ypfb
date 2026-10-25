@@ -53,6 +53,14 @@ templates/  static/  docs/  orca/
 ## 7. Seguridad (RNF-05 a RNF-09)
 - Niveles: ADMINISTRADOR, OPERADOR, CONSULTA (`docs/02`). Toda vista exige login y verifica nivel y rol (decorador de `apps.core.permisos`).
 - Bloqueo tras 3 intentos fallidos durante 15 minutos; sesión de 15 minutos de inactividad.
+- Menú y acceso por rol (casos de uso de cada actor e informe 3.3.1):
+  - Afiliador: Kardex y Contratos, Seguro CPS y Evaluaciones (operador).
+  - Encargado de Pagos: Planillas y Finiquitos (operador); Kardex solo lectura.
+  - Responsable de Vacaciones y Lactancias: Vacaciones y Lactancias (operador); Kardex solo lectura.
+  - Administrador del Sistema: Administración.
+  - Consulta: Kardex solo lectura.
+  - Todos: Reportes, cada uno solo los de su proceso (RF-26).
+- MySQL y Redis no se publican fuera de la red de Docker en producción; en desarrollo, solo en 127.0.0.1.
 
 ## 8. Pruebas y calidad (definición de terminado)
 Una tarea está terminada solo si:
