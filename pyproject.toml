@@ -1,0 +1,24 @@
+[project]
+name = "sistema-rrhh-ypfb"
+version = "0.1.0"
+description = "Sistema de Información para la Gestión de Recursos Humanos – YPFB-Andina"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["*/migrations/*", ".venv", "staticfiles", "media"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ", "N", "C4", "SIM"]
+ignore = [
+    "DJ001",  # Las columnas VARCHAR nulas del informe son CharField(null=True).
+    "N818",   # Las excepciones llevan nombres en español (AccesoRechazado, ParametroNoConfigurado).
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["apps", "config"]
+
+[tool.coverage.run]
+source = ["apps"]
+omit = ["*/migrations/*", "*/tests/*"]

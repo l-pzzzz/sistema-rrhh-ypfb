@@ -1,0 +1,80 @@
+# Desarrollo: docker compose up --build  →  https://localhost:8443 (certificado autofirmado).
+# HTTPS_PORT y HTTP_PORT (en .env) fijan los puertos publicados; en producción, 443 y 80.
+# Despliegue (docs/06): nginx (HTTPS) → web (Gunicorn + Django), worker y beat (Celery), redis y MySQL 8.
+
+x-app: &app
+  build: .
+  env_file: .env
+  environment:
+    DB_HOST: db
+    REDIS_URL: redis://redis:6379/1
+    CELERY_BROKER_URL: redis://redis:6379/0
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_started
+  volumes:
+    - media:/app/media
+  restart: unless-stopped
+
+services:
+  nginx:
+    build: docker/nginx
+    environment:
+      HTTPS_PORT: ${HTTPS_PORT:-8443}
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+    volumes:
+      - estaticos:/app/staticfiles:ro
+      - certificados:/etc/nginx/certs
+    depends_on:
+      - web
+    restart: unless-stopped
+
+  web:
+    <<: *app
+    volumes:
+      - media:/app/media
+      - estaticos:/app/staticfiles
+
+  worker:
+    <<: *app
+    command: ["celery", "-A", "config", "worker", "--loglevel=info"]
+
+  beat:
+    <<: *app
+    command: ["celery", "-A", "config", "beat", "--loglevel=info", "--schedule=/tmp/celerybeat-schedule"]
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-bd_rrhh}
+      MYSQL_USER: ${DB_USER:-rrhh}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Defina DB_PASSWORD en .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Defina DB_ROOT_PASSWORD en .env}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./docker/mysql/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\""]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  mysql:
+  media:
+  estaticos:
+  certificados:

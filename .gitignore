@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Proyecto RRHH: estáticos recolectados y archivos subidos
+staticfiles/
+media/
