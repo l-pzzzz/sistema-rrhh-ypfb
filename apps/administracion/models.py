@@ -40,6 +40,11 @@ class Parametro(models.Model):
         VALOR_LACT = "VALOR_LACT", "Valor de la lactancia (múltiplos del SMN)"
         PLAZO_FINIQ = "PLAZO_FINIQ", "Plazo de pago del finiquito (días calendario)"
         ANTIG_MIN_INDEM = "ANTIG_MIN_INDEM", "Días continuos para la indemnización"
+        UMBRAL_RCIVA = "UMBRAL_RCIVA", "Umbral RC-IVA (salarios mínimos)"
+        MNI_RCIVA = "MNI_RCIVA", "Monto no imponible RC-IVA (salarios mínimos)"
+        PORC_ANTICIPO = "PORC_ANTICIPO", "Tope mensual de anticipos (%)"
+        DIA_ANTICIPO = "DIA_ANTICIPO", "Día desde el cual se registran anticipos"
+        DIA_F110 = "DIA_F110", "Último día para aplicar el F110 en el mes"
 
     pk = models.CompositePrimaryKey("gestion", "clave")
     gestion = models.ForeignKey(GestionSalarial, on_delete=models.PROTECT, db_column="Año", related_name="parametros")

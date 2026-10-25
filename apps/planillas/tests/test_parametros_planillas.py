@@ -69,22 +69,22 @@ def test_dia_f110_se_lee_de_parametro():
     assert ServicioF110.mes_de_aplicacion(f110) == (ANIO, MES + 1)
 
 
-def test_aviso_al_administrador_por_correo(monkeypatch):
-    monkeypatch.setenv("CORREO_ADMINISTRADOR", "admin@ypfb.test, otro@ypfb.test")
+def test_aviso_al_administrador_por_correo(settings):
+    settings.CORREO_ADMINISTRADOR = ["admin@ypfb.test", "otro@ypfb.test"]
     assert avisar_administrador("Faltan parámetros", "Detalle")
     assert mail.outbox[0].to == ["admin@ypfb.test", "otro@ypfb.test"]
     assert not avisar_administrador("Faltan parámetros", "Detalle")  # no se repite en la misma hora
     assert len(mail.outbox) == 1
 
 
-def test_sin_correo_configurado_solo_pantalla(monkeypatch):
-    monkeypatch.setenv("CORREO_ADMINISTRADOR", "")
+def test_sin_correo_configurado_solo_pantalla(settings):
+    settings.CORREO_ADMINISTRADOR = []
     assert not avisar_administrador("Faltan parámetros", "Detalle")
     assert mail.outbox == []
 
 
-def test_faltan_parametros_bloquea_en_pantalla_y_avisa(client, monkeypatch):
-    monkeypatch.setenv("CORREO_ADMINISTRADOR", "admin@ypfb.test")
+def test_faltan_parametros_bloquea_en_pantalla_y_avisa(client, settings):
+    settings.CORREO_ADMINISTRADOR = ["admin@ypfb.test"]
     haber("3000")
     contrato_con_marcacion(30)
     Parametro.objects.filter(gestion_id=ANIO, clave="MNI_RCIVA").delete()

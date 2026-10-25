@@ -11,6 +11,7 @@ import re
 from dataclasses import dataclass
 
 from django.apps import apps
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.db import transaction
@@ -489,7 +490,7 @@ class ServicioContrato:
 
 def correos_afiliadores():
     """Direcciones de CORREO_AFILIADORES (.env, separadas por comas); vacía = alerta solo en pantalla."""
-    return [c.strip() for c in os.environ.get("CORREO_AFILIADORES", "").split(",") if c.strip()]
+    return list(settings.CORREO_AFILIADORES)
 
 
 def enviar_alertas_categoria(alertas):

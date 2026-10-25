@@ -1,9 +1,9 @@
 """Reglas de negocio del módulo Planillas de sueldos (CU-05 a CU-07)."""
 
 import hashlib
-import os
 from decimal import ROUND_HALF_UP, Decimal
 
+from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
@@ -45,7 +45,7 @@ def avisar_administrador(asunto, mensaje):
 
     Se envía una vez por hora por asunto para que recargar la pantalla no repita el correo.
     """
-    destinatarios = [d.strip() for d in os.environ.get("CORREO_ADMINISTRADOR", "").split(",") if d.strip()]
+    destinatarios = list(settings.CORREO_ADMINISTRADOR)
     if not destinatarios or not cache.add(f"planillas:aviso:{hashlib.md5(asunto.encode()).hexdigest()}", 1, 60 * 60):
         return False
     send_mail(asunto, mensaje, None, destinatarios, fail_silently=True)

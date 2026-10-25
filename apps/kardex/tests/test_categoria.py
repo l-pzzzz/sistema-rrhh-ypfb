@@ -86,8 +86,8 @@ def test_alerta_se_muestra_30_dias():
     assert alertas_categoria(datetime.date(2026, 12, 25)) == []
 
 
-def test_alerta_por_correo_a_los_afiliadores(monkeypatch, mailoutbox):
-    monkeypatch.setenv("CORREO_AFILIADORES", "uno@ypfb.test, dos@ypfb.test")
+def test_alerta_por_correo_a_los_afiliadores(settings, mailoutbox):
+    settings.CORREO_AFILIADORES = ["uno@ypfb.test", "dos@ypfb.test"]
     ContratoFactory(empleado=EmpleadoFactory(fecha_ingreso=INGRESO))
     ServicioContrato().recalcular_categorias(datetime.date(2026, 11, 24))
     (correo,) = mailoutbox
@@ -95,15 +95,15 @@ def test_alerta_por_correo_a_los_afiliadores(monkeypatch, mailoutbox):
     assert "Cambio de categoría: A → B" in correo.body
 
 
-def test_sin_correo_configurado_solo_pantalla(monkeypatch, mailoutbox):
-    monkeypatch.setenv("CORREO_AFILIADORES", "")
+def test_sin_correo_configurado_solo_pantalla(settings, mailoutbox):
+    settings.CORREO_AFILIADORES = []
     ContratoFactory(empleado=EmpleadoFactory(fecha_ingreso=INGRESO))
     assert len(ServicioContrato().recalcular_categorias(datetime.date(2026, 11, 24))) == 1
     assert mailoutbox == []
 
 
-def test_sin_cambios_no_envia_correo(monkeypatch, mailoutbox):
-    monkeypatch.setenv("CORREO_AFILIADORES", "uno@ypfb.test")
+def test_sin_cambios_no_envia_correo(settings, mailoutbox):
+    settings.CORREO_AFILIADORES = ["uno@ypfb.test"]
     ContratoFactory(empleado=EmpleadoFactory(fecha_ingreso=INGRESO))
     ServicioContrato().recalcular_categorias(datetime.date(2026, 10, 24))
     assert mailoutbox == []
