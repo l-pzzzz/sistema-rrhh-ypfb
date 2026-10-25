@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titulo %}Afiliación {{ afil.nro }}{% endblock %}
+{% block contenido %}
+<h1 class="h4">Afiliación CPS · {{ empleado.apellidos }} {{ empleado.nombres }}</h1>
+{% if alerta %}<div class="alert alert-{{ bootstrap }}">{{ alerta }}. La empresa sigue obligada a pagar las cotizaciones mientras no se registre el aviso de baja (DL 13214, Art. 8).</div>{% endif %}
+<dl class="row">
+  <dt class="col-sm-3">CI / Código</dt><dd class="col-sm-9">{{ empleado.ci }} · {{ empleado.codigo }}</dd>
+  <dt class="col-sm-3">Contrato</dt><dd class="col-sm-9">{{ contrato.nro }} · {{ contrato.estado }} · inicio {{ contrato.fecha_inicio|date:"d/m/Y" }}{% if contrato.fecha_retiro %} · retiro {{ contrato.fecha_retiro|date:"d/m/Y" }}{% endif %}</dd>
+  <dt class="col-sm-3">Cargos</dt><dd class="col-sm-9">{% for cargo in cargos %}{{ cargo.nombre }} ({{ cargo.ubicacion.departamento }}){% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd>
+  <dt class="col-sm-3">Tipo / estado</dt><dd class="col-sm-9">{{ afil.tipo }} · {{ afil.estado }}</dd>
+  <dt class="col-sm-3">Fecha límite de afiliación</dt><dd class="col-sm-9">{{ afil.fecha_limite|date:"d/m/Y" }}</dd>
+  <dt class="col-sm-3">Matrícula / afiliación</dt><dd class="col-sm-9">{{ afil.matricula|default:"—" }} · {{ afil.fecha_afil|date:"d/m/Y"|default:"—" }}</dd>
+  <dt class="col-sm-3">Baja</dt><dd class="col-sm-9">límite {{ afil.fecha_lim_baja|date:"d/m/Y"|default:"—" }} · aviso {{ afil.fecha_desafil|date:"d/m/Y"|default:"—" }}</dd>
+  {% if color %}<dt class="col-sm-3">Semáforo</dt><dd class="col-sm-9"><span class="badge text-bg-{{ bootstrap }}">{{ color|capfirst }}</span> {{ restantes }} día(s) hábil(es)</dd>{% endif %}
+</dl>
+<div class="d-flex flex-wrap gap-2">
+  {% if puede_afiliar %}
+  <a class="btn btn-primary" href="{% url 'cps:aviso' afil.nro %}">Generar aviso de afiliación</a>
+  <a class="btn btn-success" href="{% url 'cps:afiliar' afil.nro %}">Registrar matrícula y fecha</a>
+  {% endif %}
+  {% if puede_baja %}<a class="btn btn-danger" href="{% url 'cps:baja' afil.nro %}">Registrar aviso de baja</a>{% endif %}
+  {% if puede_corregir %}<a class="btn btn-outline-secondary" href="{% url 'cps:corregir' afil.nro %}">Actualizar o corregir</a>{% endif %}
+  <a class="btn btn-outline-secondary" href="{% url 'cps:historial' empleado.ci %}">Historial</a>
+  <a class="btn btn-link" href="{% url 'cps:inicio' %}">Volver a la bandeja</a>
+</div>
+{% endblock %}

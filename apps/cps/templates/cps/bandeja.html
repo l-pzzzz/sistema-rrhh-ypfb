@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block titulo %}Seguro CPS{% endblock %}
+{% block contenido %}
+<h1 class="h4 mb-3">Seguro de salud CPS · Bandeja de control</h1>
+<form id="filtros" class="row g-2 mb-3" hx-get="{% url 'cps:inicio' %}" hx-target="#tabla" hx-push-url="true"
+      hx-trigger="change, keyup changed delay:300ms from:#id_q">
+  <div class="col-md-4"><label class="form-label" for="id_q">{{ filtro.q.label }}</label>{{ filtro.q }}</div>
+  <div class="col-md-2"><label class="form-label" for="id_semaforo">{{ filtro.semaforo.label }}</label>{{ filtro.semaforo }}</div>
+  <div class="col-md-2"><label class="form-label" for="id_estado">{{ filtro.estado.label }}</label>{{ filtro.estado }}</div>
+  <div class="col-md-2"><label class="form-label" for="id_departamento">{{ filtro.departamento.label }}</label>{{ filtro.departamento }}</div>
+  <div class="col-md-2"><label class="form-label" for="id_pestana">Ver</label>{{ filtro.pestana }}</div>
+  <div class="col-md-2"><label class="form-label" for="id_desde">{{ filtro.desde.label }}</label>{{ filtro.desde }}</div>
+  <div class="col-md-2"><label class="form-label" for="id_hasta">{{ filtro.hasta.label }}</label>{{ filtro.hasta }}</div>
+</form>
+<div id="tabla">{% include "cps/_tabla.html" %}</div>
+{% endblock %}
