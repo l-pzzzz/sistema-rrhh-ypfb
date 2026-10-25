@@ -17,7 +17,9 @@ class ParametroNoConfigurado(LookupError):
     """La gestión no tiene configurado el parámetro pedido (RF-11, regla 4)."""
 
 
-class ServicioParametros:
+class ParametrosSistema:
+    """Singleton ParametrosSistema del informe (docs/06); la instancia del módulo es ``parametros``."""
+
     _instancia = None
 
     def __new__(cls):
@@ -45,6 +47,28 @@ class ServicioParametros:
             raise ParametroNoConfigurado(f"El parámetro {clave} no está configurado para la gestión {anio}.")
         return valores[clave]
 
+    def valor_vigente(self, clave, anio):
+        """Valor de la gestión ``anio`` o, si no lo tiene, el de la última gestión anterior que lo tenga.
+
+        Solo para cálculos que cruzan a una gestión todavía no configurada (por ejemplo, un plazo en
+        días hábiles que termina en el año siguiente). La planilla usa ``valor()``: sin parámetros de
+        su gestión no se procesa (RF-11, regla 4).
+        """
+        try:
+            return self.valor(clave, anio)
+        except ParametroNoConfigurado:
+            from apps.administracion.models import Parametro
+
+            anterior = (
+                Parametro.objects.filter(clave=clave, gestion_id__lt=anio)
+                .order_by("-gestion_id")
+                .values_list("gestion_id", flat=True)
+                .first()
+            )
+            if anterior is None:
+                raise
+            return self.valor(clave, anterior)
+
     def invalidar(self, anio=None):
         if anio is not None:
             cache.delete(f"{PREFIJO}{anio}")
@@ -55,4 +79,4 @@ class ServicioParametros:
         cache.delete_many([f"{PREFIJO}{a}" for a in anios])
 
 
-parametros = ServicioParametros()
+parametros = ParametrosSistema()

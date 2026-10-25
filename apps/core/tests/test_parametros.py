@@ -4,8 +4,8 @@ from decimal import Decimal
 
 import pytest
 
-from apps.administracion.models import Parametro
-from apps.core.parametros import ParametroNoConfigurado, ServicioParametros, parametros
+from apps.administracion.models import GestionSalarial, Parametro
+from apps.core.parametros import ParametroNoConfigurado, ParametrosSistema, parametros
 
 from .fabricas import gestion
 
@@ -13,7 +13,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_es_singleton():
-    assert ServicioParametros() is ServicioParametros() is parametros
+    assert ParametrosSistema() is ParametrosSistema() is parametros
 
 
 def test_lee_el_valor_de_la_gestion():
@@ -48,3 +48,21 @@ def test_clave_inexistente():
 
 def test_todos_de_la_gestion():
     assert len(parametros.todos(2026)) == 11
+
+
+def test_valor_vigente_usa_la_ultima_gestion_anterior():
+    """Sin gestión 2027 se usa el valor de la última gestión configurada (2026)."""
+    assert parametros.valor_vigente("DIAS_LAB", 2027) == Decimal("5.00")
+    with pytest.raises(ParametroNoConfigurado):
+        parametros.valor("DIAS_LAB", 2027)
+
+
+def test_valor_vigente_prefiere_la_gestion_del_anio():
+    nueva = GestionSalarial.objects.create(anio=2027)
+    Parametro.objects.create(gestion=nueva, clave="DIAS_LAB", valor=Decimal("6"))
+    assert parametros.valor_vigente("DIAS_LAB", 2027) == Decimal("6")
+
+
+def test_valor_vigente_sin_gestion_anterior():
+    with pytest.raises(ParametroNoConfigurado):
+        parametros.valor_vigente("DIAS_LAB", 2020)

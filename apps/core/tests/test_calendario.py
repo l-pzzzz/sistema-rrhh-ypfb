@@ -4,9 +4,10 @@ import datetime
 
 import pytest
 
-from apps.administracion.models import Feriado, Parametro
+from apps.administracion.models import Feriado, GestionSalarial, Parametro
 from apps.core import calendario
-from apps.core.parametros import parametros
+from apps.core.calendario import CalendarioLaboral
+from apps.core.parametros import ParametroNoConfigurado, parametros
 
 from .fabricas import FeriadoFactory, UbicacionFactory, gestion
 
@@ -76,3 +77,36 @@ def test_dias_lab_parametrizable():
 
 def test_dias_habiles_entre_rango_vacio():
     assert calendario.dias_habiles_entre(D(2026, 10, 30), D(2026, 10, 29)) == 0
+
+
+def test_plazo_que_pasa_a_un_anio_sin_gestion():
+    """Plazo que empieza el lunes 28/12/2026 y termina en 2027, sin gestión 2027: usa DIAS_LAB de 2026.
+
+    28, 29, 30 y 31/12, viernes 1/1 (sin feriados registrados) y lunes 4/1/2027.
+    """
+    assert not GestionSalarial.objects.filter(anio=2027).exists()
+    assert calendario.sumar_dias_habiles(D(2026, 12, 28), 6) == D(2027, 1, 4)
+    assert calendario.dias_habiles_entre(D(2026, 12, 28), D(2027, 1, 8)) == 10
+
+
+def test_plazo_que_pasa_a_un_anio_con_gestion_propia():
+    """Si la gestión 2027 existe, sus días se cuentan con su propio DIAS_LAB (6: el sábado es hábil)."""
+    nueva = GestionSalarial.objects.create(anio=2027)
+    Parametro.objects.create(gestion=nueva, clave="DIAS_LAB", valor=6)
+    # 28, 29, 30 y 31/12/2026, viernes 1/1/2027 y sábado 2/1/2027.
+    assert calendario.sumar_dias_habiles(D(2026, 12, 28), 6) == D(2027, 1, 2)
+
+
+def test_sin_ninguna_gestion_anterior():
+    with pytest.raises(ParametroNoConfigurado):
+        calendario.es_dia_habil(D(2020, 3, 2))
+
+
+def test_calendario_laboral_y_accesos_directos():
+    """docs/06: CalendarioLaboral agrupa las tres operaciones; las funciones del módulo son accesos directos."""
+    cal = CalendarioLaboral()
+    assert cal.sumar_dias_habiles(D(2026, 10, 23), 6) == calendario.sumar_dias_habiles(D(2026, 10, 23), 6)
+    assert cal.dias_habiles_entre(D(2026, 10, 19), D(2026, 10, 25)) == calendario.dias_habiles_entre(
+        D(2026, 10, 19), D(2026, 10, 25)
+    ) == 5
+    assert cal.es_dia_habil(D(2026, 10, 23)) is calendario.es_dia_habil(D(2026, 10, 23)) is True
