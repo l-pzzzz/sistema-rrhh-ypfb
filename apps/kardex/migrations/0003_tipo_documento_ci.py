@@ -1,11 +1,16 @@
-"""Tipo de documento "CI" para la fotocopia obligatoria del dependiente (RF-05, decisión C1 en docs/06)."""
+"""Tipos de documento CI (fotocopia obligatoria del dependiente, RF-05) y TITULO y CERTIFICADO (datos
+académicos del RF-01 como documentos, RF-04). Decisiones de C1 en docs/06."""
 
 from django.db import migrations
 
 
+TIPOS = ["CI", "TITULO", "CERTIFICADO"]
+
+
 def cargar(apps, schema_editor):
     TipoDocumento = apps.get_model("kardex", "TipoDocumento")
-    TipoDocumento.objects.get_or_create(descripcion="CI")
+    for descripcion in TIPOS:
+        TipoDocumento.objects.get_or_create(descripcion=descripcion)
 
 
 class Migration(migrations.Migration):

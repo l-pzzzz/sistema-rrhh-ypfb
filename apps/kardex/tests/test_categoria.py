@@ -77,10 +77,36 @@ def test_recalculo_ignora_contratos_concluidos():
     assert ServicioContrato().recalcular_categorias(datetime.date(2026, 6, 1)) == []
 
 
-def test_alertas_antiguas_no_se_muestran():
+def test_alerta_se_muestra_30_dias():
+    ContratoFactory(empleado=EmpleadoFactory(fecha_ingreso=INGRESO))
+    madrugada = timezone.make_aware(datetime.datetime(2026, 11, 24, 1, 0))
+    with mock.patch("apps.core.auditoria.timezone.now", return_value=madrugada):
+        ServicioContrato().recalcular_categorias(datetime.date(2026, 11, 24))
+    assert len(alertas_categoria(datetime.date(2026, 12, 24))) == 1  # 30 días después
+    assert alertas_categoria(datetime.date(2026, 12, 25)) == []
+
+
+def test_alerta_por_correo_a_los_afiliadores(monkeypatch, mailoutbox):
+    monkeypatch.setenv("CORREO_AFILIADORES", "uno@ypfb.test, dos@ypfb.test")
     ContratoFactory(empleado=EmpleadoFactory(fecha_ingreso=INGRESO))
     ServicioContrato().recalcular_categorias(datetime.date(2026, 11, 24))
-    assert alertas_categoria(datetime.date(2027, 1, 30)) == []
+    (correo,) = mailoutbox
+    assert correo.to == ["uno@ypfb.test", "dos@ypfb.test"]
+    assert "Cambio de categoría: A → B" in correo.body
+
+
+def test_sin_correo_configurado_solo_pantalla(monkeypatch, mailoutbox):
+    monkeypatch.setenv("CORREO_AFILIADORES", "")
+    ContratoFactory(empleado=EmpleadoFactory(fecha_ingreso=INGRESO))
+    assert len(ServicioContrato().recalcular_categorias(datetime.date(2026, 11, 24))) == 1
+    assert mailoutbox == []
+
+
+def test_sin_cambios_no_envia_correo(monkeypatch, mailoutbox):
+    monkeypatch.setenv("CORREO_AFILIADORES", "uno@ypfb.test")
+    ContratoFactory(empleado=EmpleadoFactory(fecha_ingreso=INGRESO))
+    ServicioContrato().recalcular_categorias(datetime.date(2026, 10, 24))
+    assert mailoutbox == []
 
 
 def test_tarea_programada_diaria():

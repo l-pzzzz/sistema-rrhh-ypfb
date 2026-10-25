@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 from django.apps import apps
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Prefetch, Q
 from django.utils import timezone
@@ -56,7 +57,7 @@ FIRMAS = {
 }
 
 PREFIJO_ALERTA = "Cambio de categoría:"
-DIAS_ALERTA = 7  # Días que el Afiliador ve una alerta de cambio de categoría.
+DIAS_ALERTA = 30  # Días que el Afiliador ve una alerta de cambio de categoría (docs/06, decisiones de C1).
 AVISO_SIN_AFILIACION = "El trabajador aún no está afiliado a la CPS"
 
 
@@ -468,6 +469,7 @@ class ServicioContrato:
             alertas.append(
                 AlertaCategoria(contrato.nro, contrato.empleado_id, nombre_completo(contrato.empleado), mensaje)
             )
+        enviar_alertas_categoria(alertas)
         return alertas
 
     @staticmethod
@@ -483,6 +485,25 @@ class ServicioContrato:
             "fecha_retiro": contrato.fecha_retiro,
             "tipo_retiro": contrato.tipo_retiro,
         }
+
+
+def correos_afiliadores():
+    """Direcciones de CORREO_AFILIADORES (.env, separadas por comas); vacía = alerta solo en pantalla."""
+    return [c.strip() for c in os.environ.get("CORREO_AFILIADORES", "").split(",") if c.strip()]
+
+
+def enviar_alertas_categoria(alertas):
+    """Envía por correo las alertas de cambio de categoría al Afiliador (docs/06, RF-03 regla 2)."""
+    destinatarios = correos_afiliadores()
+    if not alertas or not destinatarios:
+        return
+    lineas = [f"- {a.nombre} (CI {a.ci}, contrato {a.contrato}): {a.mensaje}" for a in alertas]
+    send_mail(
+        f"Cambio de categoría: {len(alertas)} contrato(s)",
+        "Se recalculó la categoría por antigüedad de los siguientes contratos:\n\n" + "\n".join(lineas),
+        None,
+        destinatarios,
+    )
 
 
 def alertas_categoria(hoy=None, dias=DIAS_ALERTA):

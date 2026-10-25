@@ -18,11 +18,13 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def titulo(db):
-    return TipoDocumento.objects.create(descripcion="Título profesional")
+    return TipoDocumento.objects.create(descripcion="Diploma")
 
 
-def test_tipo_ci_cargado_por_migracion(tipo_ci):
+def test_tipos_cargados_por_migracion(tipo_ci):
+    """Decisión C1: CI, y TITULO y CERTIFICADO para los datos académicos (RF-01)."""
     assert tipo_ci.descripcion == "CI"
+    assert set(TipoDocumento.objects.values_list("descripcion", flat=True)) >= {"CI", "TITULO", "CERTIFICADO"}
 
 
 @pytest.mark.parametrize("archivo", [pdf, png, jpg])
