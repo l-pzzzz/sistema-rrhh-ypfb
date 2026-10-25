@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% comment %}Formulario común de CU-01 a CU-03; los errores de cada campo se muestran antes de guardar (RNF-02).{% endcomment %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<nav aria-label="Ruta">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'kardex:inicio' %}">Kardex</a></li>
+    {% if empleado %}
+    <li class="breadcrumb-item"><a href="{% url 'kardex:ficha' empleado.ci %}">{{ empleado.apellidos }}, {{ empleado.nombres }}</a></li>
+    {% endif %}
+    <li class="breadcrumb-item active" aria-current="page">{{ titulo }}</li>
+  </ol>
+</nav>
+<h1 class="h4">{{ titulo }}</h1>
+
+{% for aviso in avisos %}<div class="alert alert-warning">{{ aviso }}</div>{% endfor %}
+
+{% if categoria %}
+<div class="alert alert-info">
+  Categoría por antigüedad: <strong>{{ categoria.cod }}</strong> ·
+  Haber básico {{ gestion }}:
+  {% if haber_basico is not None %}<strong>Bs {{ haber_basico }}</strong>{% else %}<em>no configurado para la gestión</em>{% endif %}
+</div>
+{% endif %}
+
+{% if form.non_field_errors %}
+<div class="alert alert-danger" role="alert">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
+{% endif %}
+
+<form method="post" novalidate {% if multipart %}enctype="multipart/form-data"{% endif %}
+      {% if confirmar %}onsubmit="return confirm('{{ confirmar|escapejs }}');"{% endif %}>
+  {% csrf_token %}
+  <div class="row g-3">
+    {% for campo in form %}
+    <div class="{% if campo.name == 'motivo' or campo.name == 'motivo_retiro' or campo.name == 'cargos' %}col-12{% else %}col-12 col-md-6 col-xl-4{% endif %}">
+      <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}{% if campo.field.required %} *{% endif %}</label>
+      {% if campo.name == 'cargos' %}
+      <div class="border rounded p-2 {% if campo.errors %}border-danger{% endif %}" style="max-height: 14rem; overflow-y: auto;">
+        {% for opcion in campo %}
+        <div class="form-check">{{ opcion.tag }} <label class="form-check-label" for="{{ opcion.id_for_label }}">{{ opcion.choice_label }}</label></div>
+        {% endfor %}
+      </div>
+      {% else %}
+      {{ campo }}
+      {% endif %}
+      {% if campo.help_text %}<div class="form-text">{{ campo.help_text }}</div>{% endif %}
+      {% for error in campo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="mt-3 d-flex gap-2">
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{% if empleado %}{% url 'kardex:ficha' empleado.ci %}{% else %}{% url 'kardex:inicio' %}{% endif %}" class="btn btn-secondary">Cancelar</a>
+  </div>
+</form>
+{% endblock %}
