@@ -17,6 +17,20 @@ Fuente: Informe final, puntos 3.6.2, 3.9 y 3.10.
 | Strategy | `apps/finiquitos/estrategias.py` | `RetiroVoluntario`, `DespidoJustificado`, `DespidoInjustificado`. |
 | Observer | `apps/core/senales.py` + `receivers.py` de cada app | `contrato_registrado` y `contrato_retirado`. |
 
+## Nombres de clases obligatorios (deben coincidir con los diagramas de patrones del informe, 3.6.2)
+| Clase del informe | Dónde va | Nota |
+|---|---|---|
+| `ParametrosSistema` | `apps/core/parametros.py` | Singleton; la instancia del módulo se llama `parametros`. |
+| `CalendarioLaboral` | `apps/core/calendario.py` | Agrupa `sumar_dias_habiles`, `dias_habiles_entre` y `es_dia_habil`. |
+| `ServicioContrato` | `apps/kardex/services.py` | Sujeto del Observer: registra contratos y retiros y emite las señales. |
+| `ObservadorContrato`, `EventoContrato` | `apps/core/senales.py` | Interfaz de los receptores y datos del evento (contrato y tipo). |
+| `ControlPlazosCPS` | `apps/cps/receivers.py` | Observador: fechas límite de afiliación y baja. |
+| `DesactivadorCuenta` | `apps/administracion/receivers.py` | Observador: desactiva la cuenta del titular. |
+| `HabilitadorFiniquito` | `apps/finiquitos/receivers.py` | Observador: habilita el finiquito. |
+| `FachadaPlanilla`, `ControladorPlanilla`, `CalculadoraDescuentos`, `GeneradorBoletas`, `ServicioAnticipos`, `ServicioF110` | `apps/planillas/` | Facade de la planilla. |
+| `IFuenteAsistencia`, `AdaptadorArchivoAsistencia`, `ArchivoMarcacionesCSV` | `apps/planillas/asistencia.py` | Adapter. |
+| `ServicioFiniquito`, `EstrategiaFiniquito`, `RetiroVoluntario`, `DespidoJustificado`, `DespidoInjustificado` | `apps/finiquitos/` | Strategy. |
+
 ## Contrato de las señales
 ```python
 # apps/core/senales.py

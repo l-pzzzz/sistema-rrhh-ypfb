@@ -69,6 +69,8 @@ Una tarea está terminada solo si:
 3. `ruff check .` no muestra errores.
 4. `python manage.py makemigrations --check` no detecta cambios pendientes.
 5. El PR lista: RF y CU implementados, pruebas agregadas y dudas para el equipo.
+6. El PR actualiza `docs/09_trazabilidad_codigo.md` (archivos, pruebas y estado de cada RF que implementa).
+7. Las clases de los patrones de diseño usan los nombres de `docs/06` (iguales a los diagramas del informe).
 
 Escribe primero las pruebas (con los resultados del informe) y después el código.
 
