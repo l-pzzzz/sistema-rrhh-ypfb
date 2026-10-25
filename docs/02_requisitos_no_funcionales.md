@@ -9,7 +9,7 @@ Fuente: Informe final, punto 3.2 (ISO/IEC 25010).
 | RNF-03 | Eficiencia | Tiempo de respuesta de las consultas y búsquedas. | Menor a 3 segundos con 2.500 empleados registrados. |
 | RNF-04 | Eficiencia | Tiempo de procesamiento de la planilla mensual. | Menor a 5 minutos para 2.500 empleados. |
 | RNF-05 | Seguridad | Comunicación cifrada entre el navegador y el servidor. | Uso de HTTPS con TLS 1.2 o superior. |
-| RNF-06 | Seguridad | Almacenamiento seguro de contraseñas. | Contraseñas cifradas con BCrypt (hasher de Django). |
+| RNF-06 | Seguridad | Almacenamiento seguro de contraseñas. | Contraseñas cifradas con BCrypt (hash $2b$ de 60 caracteres, USUARIO.Clave). |
 | RNF-07 | Seguridad | Control de acceso por niveles. | Tres niveles (Tabla "Niveles de acceso"): Administrador, Operador y Consulta. Cada usuario ve en el menú solo lo que su nivel y su rol permiten; un acceso denegado responde con el error 403 y queda en la bitácora. |
 | RNF-08 | Seguridad | Cierre automático de sesión. | Tras 15 minutos de inactividad. |
 | RNF-09 | Seguridad | Registro inalterable de las operaciones. | Toda alta, baja, modificación, inicio de sesión fallido y bloqueo queda en la bitácora con usuario, fecha, IP y, en tablas críticas, valor anterior y nuevo; ningún rol puede modificarla. |

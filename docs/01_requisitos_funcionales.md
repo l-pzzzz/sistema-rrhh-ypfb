@@ -7,7 +7,7 @@ Fuente: Informe final, punto 3.1 (31 requisitos). Cada requisito indica sus dato
 ### RF-01 — El sistema debe permitir registrar, actualizar, corregir y consultar el Kardex del empleado con sus datos personales, académicos, laborales y de contacto de emergencia.
 
 - **Prioridad:** Alta · **Caso de uso:** CU-01
-- **Datos:** CI (con complemento opcional), código, nombres, apellidos, fecha de nacimiento, sexo, datos académicos, contacto de emergencia (nombre, parentesco y teléfono), estado (ACTIVO o RETIRADO).
+- **Datos:** CI (con complemento opcional), código, nombres, apellidos, fecha de nacimiento, sexo, datos académicos (títulos y certificados registrados como documentos, RF-04), contacto de emergencia (nombre, parentesco y teléfono), estado (ACTIVO o RETIRADO).
 - **Reglas:**
   - 1. El CI y el código del empleado son únicos.
   - 2. El CI acepta el complemento (por ejemplo, 1234567-1A).

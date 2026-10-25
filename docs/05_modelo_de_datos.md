@@ -217,8 +217,8 @@ Parámetros legales y de negocio por gestión, en formato clave-valor (patrón S
 | Columna | Tipo | Clave | Nulo | Descripción |
 |---|---|---|---|---|
 | Año | SMALLINT | PK, FK | No | Gestión a la que aplica → GESTION SALARIAL.Año |
-| Clave | VARCHAR(20) | PK | No | SMN, PORC_AFP, UMBRAL_AFP, PORC_IVA, PLAZO_AFIL, PLAZO_BAJA, EDAD_MAX_HIJO, DIAS_LAB, VALOR_LACT, PLAZO_FINIQ, ANTIG_MIN_INDEM |
-| Valor | DECIMAL(12,2) | — | No | Valor del parámetro (porcentajes entre 0 y 100; plazos > 0; VALOR_LACT en múltiplos del SMN) |
+| Clave | VARCHAR(20) | PK | No | SMN, PORC_AFP, UMBRAL_AFP, PORC_IVA, PLAZO_AFIL, PLAZO_BAJA, EDAD_MAX_HIJO, DIAS_LAB, VALOR_LACT, PLAZO_FINIQ, ANTIG_MIN_INDEM, UMBRAL_RCIVA, MNI_RCIVA, PORC_ANTICIPO, DIA_ANTICIPO, DIA_F110 |
+| Valor | DECIMAL(12,2) | — | No | Valor del parámetro (porcentajes entre 0 y 100; plazos > 0; VALOR_LACT, UMBRAL_AFP, UMBRAL_RCIVA y MNI_RCIVA en múltiplos del SMN) |
 | Fuente | VARCHAR(80) | — | Sí | Origen del valor (caso de estudio o norma) |
 
 ## FERIADO  (`administracion.Feriado`)
