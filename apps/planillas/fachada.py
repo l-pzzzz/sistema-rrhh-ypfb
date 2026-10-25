@@ -30,7 +30,6 @@ from .services import HaberNoConfigurado as HaberNoConfigurado  # noqa: F401  (s
 
 CERO = Decimal("0.00")
 TREINTA = Decimal("30")
-UMBRAL_RC_IVA_SMN = Decimal("2")  # RN-05: el RC-IVA no aplica hasta 2 salarios mínimos.
 MAX_OTROS_INGRESOS = Decimal("99999999.99")
 DURACION_BORRADOR = 60 * 60 * 24 * 30
 MOTIVO_CIERRE = "Aprobación y cierre"
@@ -72,6 +71,8 @@ class CalculadoraDescuentos:
         self.porc_afp = parametros.valor("PORC_AFP", anio)
         self.umbral_afp = parametros.valor("UMBRAL_AFP", anio)
         self.porc_iva = parametros.valor("PORC_IVA", anio)
+        self.umbral_rciva = parametros.valor("UMBRAL_RCIVA", anio)
+        self.mni_rciva = parametros.valor("MNI_RCIVA", anio)
 
     def calcular(self, haber_basico, dias, otros_ingresos=CERO, anticipos=CERO, facturas=CERO,
                  saldo_anterior=CERO):
@@ -80,10 +81,9 @@ class CalculadoraDescuentos:
         total_ganado = sueldo + otros_ingresos  # RN-02
         afp_aplica = total_ganado > self.umbral_afp * self.smn
         afp = redondear(total_ganado * self.porc_afp / CIEN) if afp_aplica else CERO  # RN-04
-        minimo = UMBRAL_RC_IVA_SMN * self.smn
         base = CERO
-        if haber_basico > minimo:  # RN-05
-            base = max(redondear(total_ganado - afp - minimo), CERO)
+        if haber_basico > self.umbral_rciva * self.smn:  # RN-05: UMBRAL_RCIVA decide si se retiene
+            base = max(redondear(total_ganado - afp - self.mni_rciva * self.smn), CERO)  # MNI_RCIVA se resta
         impuesto = redondear(base * self.porc_iva / CIEN)
         credito = redondear(facturas * self.porc_iva / CIEN)
         disponible = credito + saldo_anterior

@@ -23,6 +23,7 @@ from .services import (
     PlanillaCerrada,
     ServicioAnticipos,
     ServicioF110,
+    avisar_administrador,
     contrato_vigente_por_ci,
 )
 
@@ -30,6 +31,14 @@ solo_pagos = requiere_nivel(Rol.Nivel.OPERADOR, rol=Rol.ENCARGADO_DE_PAGOS)
 ERRORES_PROCESO = (ParametroNoConfigurado, HaberNoConfigurado, PlanillaCerrada, ValueError)
 MESES = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre",
          "Noviembre", "Diciembre"]
+
+
+def _bloquear(request, error):
+    """CU-05, extensión 2b: faltan parámetros de la gestión; se bloquea el proceso y se avisa al Administrador."""
+    texto = f"No se puede procesar la planilla: {error}"
+    avisar_administrador("Planillas: faltan parámetros de la gestión", texto)
+    messages.error(request, texto)
+    return redirect("planillas:inicio")
 
 
 def _mes(anio, mes):
@@ -89,6 +98,8 @@ def preplanilla(request, anio, mes):
                 messages.success(request, "Otros ingresos guardados en el borrador de la planilla.")
             else:
                 messages.error(request, "El monto de otros ingresos no es válido.")
+        except (ParametroNoConfigurado, HaberNoConfigurado) as error:
+            return _bloquear(request, error)
         except ERRORES_PROCESO as error:
             messages.error(request, str(error))
         return redirect("planillas:preplanilla", anio=anio, mes=mes)
@@ -97,8 +108,7 @@ def preplanilla(request, anio, mes):
     except PlanillaCerrada:
         return redirect("planillas:detalle", anio=anio, mes=mes)
     except (ParametroNoConfigurado, HaberNoConfigurado) as error:
-        messages.error(request, f"No se puede procesar la planilla: {error}")
-        return redirect("planillas:inicio")
+        return _bloquear(request, error)
     return render(request, "planillas/preplanilla.html", {**contexto, "datos": datos})
 
 

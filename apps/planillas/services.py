@@ -1,7 +1,11 @@
 """Reglas de negocio del módulo Planillas de sueldos (CU-05 a CU-07)."""
 
+import hashlib
+import os
 from decimal import ROUND_HALF_UP, Decimal
 
+from django.core.cache import cache
+from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 
 from apps.administracion.models import Bitacora
@@ -14,9 +18,6 @@ from .models import Anticipo, FormularioF110, Planilla
 DOS_CENTAVOS = Decimal("0.01")
 CIEN = Decimal("100")
 
-# Reglas del caso que no están entre los 11 parámetros de docs/04 (ver dudas del PR).
-DIA_LIMITE = 15  # RF-14 y RF-15: el F110 y el anticipo se cuentan a partir del día 15.
-TOPE_ANTICIPO = Decimal("0.50")  # RF-15 regla 2: 50 % del haber básico de la categoría.
 
 
 class PlanillaCerrada(Exception):
@@ -37,6 +38,18 @@ class AnticipoRechazado(Exception):
 
 class F110Rechazado(Exception):
     """El formulario F110 no cumple las reglas del RF-14."""
+
+
+def avisar_administrador(asunto, mensaje):
+    """Correo a CORREO_ADMINISTRADOR (docs/06); si la variable está vacía, solo se muestra en pantalla.
+
+    Se envía una vez por hora por asunto para que recargar la pantalla no repita el correo.
+    """
+    destinatarios = [d.strip() for d in os.environ.get("CORREO_ADMINISTRADOR", "").split(",") if d.strip()]
+    if not destinatarios or not cache.add(f"planillas:aviso:{hashlib.md5(asunto.encode()).hexdigest()}", 1, 60 * 60):
+        return False
+    send_mail(asunto, mensaje, None, destinatarios, fail_silently=True)
+    return True
 
 
 def redondear(valor):
@@ -95,11 +108,13 @@ class ServicioAnticipos:
             raise ContratoNoVigente("El empleado no tiene un contrato vigente")
         if monto <= 0:
             raise AnticipoRechazado("El monto del anticipo debe ser mayor a 0.")
-        if fecha.day <= DIA_LIMITE:
-            raise AnticipoRechazado(f"El anticipo solo se registra después del día {DIA_LIMITE} del mes.")
+        dia = int(parametros.valor("DIA_ANTICIPO", fecha.year))
+        porcentaje = parametros.valor("PORC_ANTICIPO", fecha.year)
+        if fecha.day <= dia:
+            raise AnticipoRechazado(f"El anticipo solo se registra después del día {dia} del mes.")
         if planilla_cerrada(fecha.year, fecha.month):
             raise AnticipoRechazado("La planilla del mes está cerrada.")
-        tope = redondear(haber_basico(contrato, fecha.year) * TOPE_ANTICIPO)
+        tope = redondear(haber_basico(contrato, fecha.year) * porcentaje / CIEN)
         acumulado = sum(
             Anticipo.objects.filter(contrato=contrato, fecha__year=fecha.year, fecha__month=fecha.month)
             .values_list("monto", flat=True),
@@ -107,7 +122,8 @@ class ServicioAnticipos:
         )
         if acumulado + monto > tope:
             raise AnticipoRechazado(
-                f"La suma de los anticipos del mes supera el 50 % del haber básico (Bs {bs(tope)})."
+                f"La suma de los anticipos del mes supera el {porcentaje.normalize():f} % del haber básico "
+                f"(Bs {bs(tope)})."
             )
         with transaction.atomic():
             anticipo = Anticipo.objects.create(contrato=contrato, fecha=fecha, monto=monto)
@@ -138,8 +154,8 @@ class ServicioF110:
 
     @staticmethod
     def mes_de_aplicacion(f110):
-        """(año, mes) de la planilla donde se aplica: hasta el día 15 el mes declarado; después, el siguiente."""
-        if f110.fecha_pres.day <= DIA_LIMITE:
+        """(año, mes) de la planilla donde se aplica: hasta DIA_F110 el mes declarado; después, el siguiente."""
+        if f110.fecha_pres.day <= int(parametros.valor("DIA_F110", f110.anio)):
             return f110.anio, f110.mes
         return _mes_siguiente(f110.anio, f110.mes)
 
@@ -174,8 +190,10 @@ class ServicioF110:
         """{nro de contrato: monto de facturas} que se aplica a la planilla (anio, mes)."""
         anio_ant, mes_ant = _mes_anterior(anio, mes)
         aplicables = {}
-        propios = FormularioF110.objects.filter(anio=anio, mes=mes, fecha_pres__day__lte=DIA_LIMITE)
-        tardios = FormularioF110.objects.filter(anio=anio_ant, mes=mes_ant, fecha_pres__day__gt=DIA_LIMITE)
+        propios = FormularioF110.objects.filter(
+            anio=anio, mes=mes, fecha_pres__day__lte=int(parametros.valor("DIA_F110", anio)))
+        tardios = FormularioF110.objects.filter(
+            anio=anio_ant, mes=mes_ant, fecha_pres__day__gt=int(parametros.valor("DIA_F110", anio_ant)))
         for f110 in (*propios, *tardios):
             aplicables[f110.contrato_id] = f110.monto_fact
         return aplicables

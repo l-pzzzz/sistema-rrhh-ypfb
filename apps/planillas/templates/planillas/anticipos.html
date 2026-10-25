@@ -2,7 +2,7 @@
 {% block titulo %}Anticipos{% endblock %}
 {% block contenido %}
 <h1 class="h3">Registrar anticipo</h1>
-<p class="text-muted">Solo después del día 15; tope: 50 % del haber básico de la categoría en el mes.</p>
+<p class="text-muted">Solo después del día configurado (DIA_ANTICIPO); el tope mensual es PORC_ANTICIPO del haber básico de la categoría.</p>
 {% include "planillas/_form.html" with boton="Registrar anticipo" %}
 <h2 class="h5 mt-4">Últimos anticipos</h2>
 <table class="table table-sm"><thead><tr><th>Fecha</th><th>CI</th><th class="text-end">Monto</th><th>Descontado</th></tr></thead><tbody>

@@ -47,7 +47,7 @@ def test_clave_inexistente():
 
 
 def test_todos_de_la_gestion():
-    assert len(parametros.todos(2026)) == 11
+    assert len(parametros.todos(2026)) == 16  # 11 de la base + 5 de planillas (docs/04)
 
 
 def test_valor_vigente_usa_la_ultima_gestion_anterior():
