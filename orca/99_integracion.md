@@ -9,4 +9,8 @@ Lee `AGENTS.md`. Tu tarea es **integrar**, no programar funciones nuevas.
    - registrar contrato → aparece la afiliación PENDIENTE con su fecha límite;
    - registrar retiro → fecha límite de baja, cuenta desactivada y finiquito habilitado;
    - contrato vigente con marcaciones → aparece en la preplanilla; contrato concluido → no aparece.
-5. Informe final: qué se unió, resultados de las pruebas y pendientes para el equipo.
+5. Configuración que solo puede tocar el integrador (`config/`):
+   - Une los diccionarios `PROGRAMACION` de cada `apps/<app>/tasks.py` en `CELERY_BEAT_SCHEDULE` y agrega una prueba que verifique que cada tarea de `docs/06` está programada.
+   - Configura el correo (`EMAIL_HOST`, `EMAIL_PORT=587`, `EMAIL_USE_TLS`, usuario y contraseña desde `.env`) y, en desarrollo, el backend de consola.
+6. Revisa `docs/09_trazabilidad_codigo.md`: cada RF de la iteración debe estar en Implementado con archivos y pruebas que existan. Si una fila no coincide con el código, detente y repórtalo.
+7. Informe final: qué se unió, resultados de las pruebas y pendientes para el equipo.
